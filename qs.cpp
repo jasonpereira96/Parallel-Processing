@@ -11,6 +11,14 @@ const int METADATA = 2;
 const int DATA = 1;
 const int TOKEN = 3;
 
+void printa(vector<int>& arr) {
+    for (int i=0; i<arr.size(); i++) {
+        printf("%d ", arr[i]);
+    }
+        printf("\n");
+
+}
+
 int getD(int p) {
     switch(p) {
         case 1: return 0;
@@ -38,36 +46,32 @@ void swap(int& a, int& b) {
     b = temp;
 }
 
-int partition(vector<int>& arr, int low, int high) {    
+
+int partition(vector<int>& arr, int low, int high) {
     // Use middle element as pivot
-    int pivot = arr[low + (high - low) / 2];
+    int pivot = arr[(low + high) / 2];
     
     // Initialize pointers
-    int i = low - 1;
-    int j = high + 1;
+    int i = low;
     
-    while (true) {
-        // Move i pointer to the right until arr[i] >= pivot
-        do {
+    // Move pivot element to the end of the range
+    std::swap(arr[(low + high) / 2], arr[high]);
+    
+    // Partition the range
+    for (int j = low; j < high; j++) {
+        if (arr[j] <= pivot) {
+            std::swap(arr[i], arr[j]);
             i++;
-        } while (arr[i] < pivot);
-        
-        // Move j pointer to the left until arr[j] <= pivot
-        do {
-            j--;
-        } while (arr[j] > pivot);
-        
-        // If i and j have crossed, the partition is complete
-        if (i >= j) {
-            return j;
         }
-        
-        // Swap arr[i] and arr[j] to maintain the partition invariant
-        int temp = arr[i];
-        arr[i] = arr[j];
-        arr[j] = temp;
     }
+    
+    // Move pivot element to its final position
+    std::swap(arr[i], arr[high]);
+    
+    return i;
 }
+
+
 
 
 int partition1(vector<int>& arr, int low, int high) {
@@ -132,6 +136,7 @@ void main2() {
             if ((myid & pow(2, i)) == 0) {
                 // printf("here2  \n");
                 int pivot_index = partition(data, low, high);
+                printa(data);
                 printf("id: %d, pivot index: %d, Pivot: %d \n", myid, pivot_index, data[pivot_index]);
                 int destination = myid ^ pow(2, i);
 
