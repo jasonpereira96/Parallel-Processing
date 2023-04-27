@@ -16,7 +16,6 @@ void printa(vector<int>& arr) {
         printf("%d ", arr[i]);
     }
         printf("\n");
-
 }
 
 int getD(int p) {
@@ -106,12 +105,18 @@ void sort_and_print(vector<int>& arr, int low, int high, int id) {
     printf("\n");
 }
 
+vector<int> generatRandomElements(int numberOfElements){
+    vector<int> data;
+    for (int i=0; i<numberOfElements; i++) {
+        data.push_back(rand() % 1000);
+    }
+    return data;
+}
 
 int main(int argc, char** argv) {
 
     // Initialize the MPI environment
     MPI_Init(NULL, NULL);
-
 
     int myid;
     MPI_Comm_rank(MPI_COMM_WORLD, &myid);
@@ -119,7 +124,19 @@ int main(int argc, char** argv) {
     int P;
     MPI_Comm_size(MPI_COMM_WORLD, &P);
 
-    vector<int> data = {2,15,14,3,12,11,1,9,16,7,6,5,4,13,10,8};
+    int numberOfElements;
+    vector<int> data;
+
+    if(myid==0){
+        numberOfElements = atoi(argv[1]);
+        data = generatRandomElements(numberOfElements);
+        //printf("Before sorting: \n");
+        //printa(data);
+    }
+    
+    //Broadcast elements:
+    MPI_Bcast(&data, numberOfElements, MPI_INT, 0, MPI_COMM_WORLD);
+
     int d = getD(P);
     int mask = pow(2, d) - 1;
     int low = 0;
