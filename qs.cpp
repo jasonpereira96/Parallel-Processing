@@ -209,26 +209,34 @@ int main(int argc, char** argv) {
 
                 //send data[pivot_index : high] to msg destination
                 MPI_Send(&n_elements, 1, MPI_INT, destination, METADATA, MPI_COMM_WORLD);
-                for (int j = pivot_index; j <= high; j++) {
-                    MPI_Send(&data[j], 1, MPI_INT, destination, DATA, MPI_COMM_WORLD);
-                }
+
+                // send the elements themselves
+                MPI_Send(&data[pivot_index], n_elements, MPI_INT, destination, DATA, MPI_COMM_WORLD);
+
                 high = pivot_index - 1;
 
             } else {
                 int source = myid ^ pow(2, i);
                 int n_elements = -1;
-                int el;
+                
 
-                // receive data from msg source
+                // receive the count of elements from msg source
                 MPI_Recv(&n_elements, 1, MPI_INT, source, METADATA, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
+                int * els = new int[n_elements];
+
                 int index = high + 1;
-                for (int j = 0; j<n_elements; j++) {
-                    // recv elements from a proc and copy them into the section of the array where they belong
-                    MPI_Recv(&el, 1, MPI_INT, source, DATA, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-                    data[--index] = el;
+                
+                // recv elements from a proc and copy them into the section of the array where they belong
+                MPI_Recv(els, n_elements, MPI_INT, source, DATA, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                
+                for (int j = 0; j < n_elements; j++) {
+                    data[--index] = els[j];
                 }
                 low = index;
+
+                // free the dynamically allocated array
+                delete[] els;            
             }
         }
     }
