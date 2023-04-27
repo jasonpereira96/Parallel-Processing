@@ -13,19 +13,19 @@ const int DATA = 1;
 const int TOKEN = 3;
 
 void printa(vector<int>& arr) {
-    for (int i=0; i<arr.size(); i++) {
+    for (int i = 0; i < arr.size(); i++) {
         printf("%d ", arr[i]);
     }
-        printf("\n");
+    printf("\n");
 }
 
 int pow(int x, int p) {
-  if (p == 0) return 1;
-  if (p == 1) return x;
-  
-  int tmp = pow(x, p/2);
-  if (p%2 == 0) return tmp * tmp;
-  else return x * tmp * tmp;
+    if (p == 0) return 1;
+    if (p == 1) return x;
+
+    int tmp = pow(x, p / 2);
+    if (p % 2 == 0) return tmp * tmp;
+    else return x * tmp * tmp;
 }
 
 void swap(int& a, int& b) {
@@ -38,13 +38,13 @@ void swap(int& a, int& b) {
 int partition(vector<int>& arr, int low, int high) {
     // Use middle element as pivot
     int pivot = arr[(low + high) / 2];
-    
+
     // Initialize pointers
     int i = low;
-    
+
     // Move pivot element to the end of the range
     std::swap(arr[(low + high) / 2], arr[high]);
-    
+
     // Partition the range
     for (int j = low; j < high; j++) {
         if (arr[j] <= pivot) {
@@ -52,10 +52,10 @@ int partition(vector<int>& arr, int low, int high) {
             i++;
         }
     }
-    
+
     // Move pivot element to its final position
     std::swap(arr[i], arr[high]);
-    
+
     return i;
 }
 
@@ -63,8 +63,8 @@ int partition(vector<int>& arr, int low, int high) {
 void quicksort(vector<int>& arr, int low, int high) {
     if (low < high) {
         int p = partition(arr, low, high);
-        quicksort(arr, low, p-1);
-        quicksort(arr, p+1, high);
+        quicksort(arr, low, p - 1);
+        quicksort(arr, p + 1, high);
     }
 }
 
@@ -74,17 +74,17 @@ void insertion_sort(vector<int>& arr) {
         int key = arr[i];
         int j = i - 1;
         while (j >= 0 && arr[j] > key) {
-            arr[j+1] = arr[j];
+            arr[j + 1] = arr[j];
             j--;
         }
-        arr[j+1] = key;
+        arr[j + 1] = key;
     }
 }
 
 vector<int> kLargest(vector<int>& v, int N, int K)
 {
-    vector<int> res; 
-    if (N ==0){
+    vector<int> res;
+    if (N == 0) {
         return res;
     }
 
@@ -104,8 +104,8 @@ vector<int> kLargest(vector<int>& v, int N, int K)
 
 vector<int> kSmallest(vector<int>& v, int N, int K)
 {
-    vector<int> res; 
-    if (N ==0){
+    vector<int> res;
+    if (N == 0) {
         return res;
     }
     priority_queue<int> pq;
@@ -125,32 +125,154 @@ vector<int> kSmallest(vector<int>& v, int N, int K)
 void sort_and_print(vector<int>& arr, int low, int high, int id) {
     vector<int> v;
     printf("Hello from %d \n", id);
-    for (int i=low; i<=high; i++) {
+    for (int i = low; i <= high; i++) {
         v.push_back(arr[i]);
     }
     insertion_sort(v);
-    for (int i=0; i < v.size(); i++) {
+    for (int i = 0; i < v.size(); i++) {
         printf("%d ", v[i]);
     }
     printf("\n");
 
-// Tester code - get largest/smallest k elements   
-    // int optimal = 2;
-    // int k = v.size() - 2;
-    // vector<int> k_ele;
-    // if (k > 0){
-    //     k_ele = kSmallest(v, v.size(), k);
-    //     printf("smallest %d elements for %d are \n", k, id);
-    //     for (int i=0; i < k_ele.size(); i++) {
-    //         printf("%d", k_ele[i]);
-    //     }
-    //     printf("\n");
-    // }
+    // Tester code - get largest/smallest k elements   
+        // int optimal = 2;
+        // int k = v.size() - 2;
+        // vector<int> k_ele;
+        // if (k > 0){
+        //     k_ele = kSmallest(v, v.size(), k);
+        //     printf("smallest %d elements for %d are \n", k, id);
+        //     for (int i=0; i < k_ele.size(); i++) {
+        //         printf("%d", k_ele[i]);
+        //     }
+        //     printf("\n");
+        // }
 }
 
-vector<int> generatRandomElements(int numberOfElements){
+int loadbalancing(int totalElements, int totalProcessors, vector<int>& arr, int low, int high, int pid) {
+    //printf("Starting load balancing");
+    vector<int> localArray;
+    for (int i = low; i <= high; i++) {
+        localArray.push_back(arr[i]);
+    }
+    //int totalElements = 0;
+    int optimalSize = totalElements / totalProcessors;
+    int docontinue = 1;
+    int mycontinue = 0;
+    int extraElementsSize = 0;
+    int numberOfElements = 0;
+    int counter = 0;
+    //Left to right load balancing
+    while (docontinue > 0)
+    {
+        counter++;
+        if (pid == 0)
+        {
+            extraElementsSize = localArray.size() - optimalSize;
+            if (extraElementsSize < 0) {
+                extraElementsSize = 0;
+            }
+            // Send the number of extraElements elements to the next processor
+            int dest = pid + 1;
+            MPI_Send(&extraElementsSize, 1, MPI_INT, 1, 0, MPI_COMM_WORLD);
+            printf("MYID = %d; Extra Elements = %d; send to %d\n", pid, extraElementsSize, pid + 1);
+        }
+        if (pid > 0) {
+            // Receive and send number of extra elements
+            MPI_Recv(&numberOfElements, 1, MPI_INT, pid - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            printf("MYID = %d; Recv Extra Elements = %d; from %d\n", pid, numberOfElements, pid - 1);
+            if (pid < totalProcessors - 1) {
+                extraElementsSize = localArray.size() - optimalSize + numberOfElements;
+                if (extraElementsSize < 0) {
+                    extraElementsSize = 0;
+                }
+                // Send the number of extraElements elements to the next processor
+                MPI_Send(&extraElementsSize, 1, MPI_INT, pid + 1, 0, MPI_COMM_WORLD);
+                printf("MYID = %d; Extra Elements = %d; send to %d\n", pid, extraElementsSize, pid + 1);
+            }
+        }
+        if (extraElementsSize > 0.2 * optimalSize)
+        {
+            mycontinue = 1;
+        }
+        else
+        {
+            mycontinue = 0;
+        }
+        MPI_Barrier(MPI_COMM_WORLD);
+        int sum = 0;
+        MPI_Reduce(&mycontinue, &docontinue, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&docontinue, 1, MPI_INT, 0, MPI_COMM_WORLD);
+        MPI_Barrier(MPI_COMM_WORLD);
+        //printf("\nMYID = %d, docontinue = %d\n", pid, docontinue);
+        if (counter > 9) {
+            break;
+        }
+    }
+    MPI_Barrier(MPI_COMM_WORLD);
+    printf("\nStarting right to left load balancing\n");
+    /*---------------------------------Right to left load balancing---------------------------------
+
+    We now proceed with load balancing in the reverse direction. This is done to ensure that no processor is left with a large number of elements.
+
+    -----------------------------------------------------------------------------------------------*/
+    mycontinue = 0;
+    extraElementsSize = 0;
+    numberOfElements = 0;
+    docontinue = 1;
+    counter = 0;
+    while (docontinue > 0)
+    {
+        counter++;
+        if (pid == totalProcessors - 1)
+        {
+            extraElementsSize = localArray.size() - optimalSize;
+            if (extraElementsSize < 0) {
+                extraElementsSize = 0;
+            }
+            // Send the number of extraElements elements to the next processor
+            int dest = pid + 1;
+            MPI_Send(&extraElementsSize, 1, MPI_INT, pid - 1, 0, MPI_COMM_WORLD);
+            printf("MYID = %d; Extra Elements = %d; send to %d\n", pid, extraElementsSize, pid - 1);
+        }
+        if (pid < totalProcessors - 1) {
+            // Receive and send number of extra elements
+            MPI_Recv(&numberOfElements, 1, MPI_INT, pid + 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            printf("MYID = %d; Recv Extra Elements = %d; from %d\n", pid, numberOfElements, pid + 1);
+            if (pid > 0) {
+                extraElementsSize = localArray.size() - optimalSize + numberOfElements;
+                if (extraElementsSize < 0) {
+                    extraElementsSize = 0;
+                }
+                // Send the number of extraElements elements to the next processor
+                MPI_Send(&extraElementsSize, 1, MPI_INT, pid - 1, 0, MPI_COMM_WORLD);
+                printf("MYID = %d; Extra Elements = %d; send to %d\n", pid, extraElementsSize, pid - 1);
+            }
+        }
+        if (extraElementsSize > 0.2 * optimalSize)
+        {
+            mycontinue = 1;
+        }
+        else
+        {
+            mycontinue = 0;
+        }
+        MPI_Barrier(MPI_COMM_WORLD);
+        int sum = 0;
+        MPI_Reduce(&mycontinue, &docontinue, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&docontinue, 1, MPI_INT, 0, MPI_COMM_WORLD);
+        MPI_Barrier(MPI_COMM_WORLD);
+        //printf("\nMYID = %d, docontinue = %d\n", pid, docontinue);
+        if (counter > 9) {
+            break;
+        }
+    }
+    return 0;
+}
+
+
+vector<int> generatRandomElements(int numberOfElements) {
     vector<int> data;
-    for (int i=0; i<numberOfElements; i++) {
+    for (int i = 0; i < numberOfElements; i++) {
         data.push_back(rand() % 1000);
     }
     return data;
@@ -173,10 +295,11 @@ int main(int argc, char** argv) {
     // read the value of numberOfElements
     numberOfElements = atoi(argv[1]);
 
-    if(myid==0){
+    if (myid == 0) {
         data = generatRandomElements(numberOfElements);
-    } else {
-        for (int i=0; i< numberOfElements; i++) {
+    }
+    else {
+        for (int i = 0; i < numberOfElements; i++) {
             data.push_back(-1);
         }
     }
@@ -186,7 +309,7 @@ int main(int argc, char** argv) {
     int low = 0;
     int high = data.size() - 1;
 
-    for (int i=d-1; i>=0; i--) {
+    for (int i = d - 1; i >= 0; i--) {
         mask = mask ^ pow(2, i);
 
         if ((myid & mask) == 0) {
@@ -204,34 +327,35 @@ int main(int argc, char** argv) {
 
                 high = pivot_index - 1;
 
-            } else {
+            }
+            else {
                 int source = myid ^ pow(2, i);
                 int n_elements = -1;
-                
+
 
                 // receive the count of elements from msg source
                 MPI_Recv(&n_elements, 1, MPI_INT, source, METADATA, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-                int * els = new int[n_elements];
+                int* els = new int[n_elements];
 
                 int index = high + 1;
-                
+
                 // recv elements from a proc and copy them into the section of the array where they belong
                 MPI_Recv(els, n_elements, MPI_INT, source, DATA, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-                
+
                 for (int j = 0; j < n_elements; j++) {
                     data[--index] = els[j];
                 }
                 low = index;
 
                 // free the dynamically allocated array
-                delete[] els;            
+                delete[] els;
             }
         }
     }
 
     MPI_Barrier(MPI_COMM_WORLD);
-
+    loadbalancing(data.size(), P, data, low, high, myid);
     int token = 566;
 
     // Sequential token passing that prints all the elements in each processor
@@ -241,17 +365,18 @@ int main(int argc, char** argv) {
 
         // start sending the token from proc 0
         MPI_Send(&token, 1, MPI_INT, myid + 1, TOKEN, MPI_COMM_WORLD);
-    } else {
+    }
+    else {
 
         // recv the token
         MPI_Recv(&token, 1, MPI_INT, myid - 1, TOKEN, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
         // print out this procs elements
         sort_and_print(data, low, high, myid);
-        
+
         // send the token to the next proc
         if (myid < P - 1) {
-            MPI_Send(&token, 1, MPI_INT, myid + 1, TOKEN, MPI_COMM_WORLD);                     
+            MPI_Send(&token, 1, MPI_INT, myid + 1, TOKEN, MPI_COMM_WORLD);
         }
     }
 
