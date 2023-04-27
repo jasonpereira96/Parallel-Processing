@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <math.h>
+#include <queue>
 
 using namespace std;
 
@@ -18,16 +19,16 @@ void printa(vector<int>& arr) {
         printf("\n");
 }
 
-int getD(int p) {
-    switch(p) {
-        case 1: return 0;
-        case 2: return 1;
-        case 4: return 2;
-        case 8: return 3;
-    }
-    printf("Error \n");
-    return -1;
-}
+// int getD(int p) {
+//     switch(p) {
+//         case 1: return 0;
+//         case 2: return 1;
+//         case 4: return 2;
+//         case 8: return 3;
+//     }
+//     printf("Error \n");
+//     return -1;
+// }
 
 
 int pow(int x, int p) {
@@ -92,6 +93,47 @@ void insertion_sort(vector<int>& arr) {
     }
 }
 
+vector<int> kLargest(vector<int>& v, int N, int K)
+{
+    vector<int> res; 
+    if (N ==0){
+        return res;
+    }
+
+    priority_queue<int, vector<int>, greater<int> > pq;
+    for (int i = 0; i < N; ++i) {
+        pq.push(v[i]);
+        if (pq.size() > K) {
+            pq.pop();
+        }
+    }
+    while (!pq.empty()) {
+        res.push_back(pq.top());
+        pq.pop();
+    }
+    return res;
+}
+
+vector<int> kSmallest(vector<int>& v, int N, int K)
+{
+    vector<int> res; 
+    if (N ==0){
+        return res;
+    }
+    priority_queue<int> pq;
+    for (int i = 0; i < N; ++i) {
+        pq.push(v[i]);
+        if (pq.size() > K) {
+            pq.pop();
+        }
+    }
+    while (!pq.empty()) {
+        res.push_back(pq.top());
+        pq.pop();
+    }
+    return res;
+}
+
 void sort_and_print(vector<int>& arr, int low, int high, int id) {
     vector<int> v;
     printf("Hello from %d \n", id);
@@ -103,6 +145,19 @@ void sort_and_print(vector<int>& arr, int low, int high, int id) {
         printf("%d ", v[i]);
     }
     printf("\n");
+
+// Tester code - get largest/smallest k elements   
+    // int optimal = 2;
+    // int k = v.size() - 2;
+    // vector<int> k_ele;
+    // if (k > 0){
+    //     k_ele = kSmallest(v, v.size(), k);
+    //     printf("smallest %d elements for %d are \n", k, id);
+    //     for (int i=0; i < k_ele.size(); i++) {
+    //         printf("%d", k_ele[i]);
+    //     }
+    //     printf("\n");
+    // }
 }
 
 vector<int> generatRandomElements(int numberOfElements){
