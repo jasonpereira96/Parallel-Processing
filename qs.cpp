@@ -19,18 +19,6 @@ void printa(vector<int>& arr) {
         printf("\n");
 }
 
-// int getD(int p) {
-//     switch(p) {
-//         case 1: return 0;
-//         case 2: return 1;
-//         case 4: return 2;
-//         case 8: return 3;
-//     }
-//     printf("Error \n");
-//     return -1;
-// }
-
-
 int pow(int x, int p) {
   if (p == 0) return 1;
   if (p == 1) return x;
@@ -179,20 +167,21 @@ int main(int argc, char** argv) {
     int P;
     MPI_Comm_size(MPI_COMM_WORLD, &P);
 
-    int numberOfElements;
+    int numberOfElements = 16; // default value
     vector<int> data;
 
-    if(myid==0){
-        numberOfElements = atoi(argv[1]);
-        data = generatRandomElements(numberOfElements);
-        //printf("Before sorting: \n");
-        //printa(data);
-    }
-    
-    //Broadcast elements:
-    MPI_Bcast(&data, numberOfElements, MPI_INT, 0, MPI_COMM_WORLD);
+    // read the value of numberOfElements
+    numberOfElements = atoi(argv[1]);
 
-    int d = log2(P);
+    if(myid==0){
+        data = generatRandomElements(numberOfElements);
+    } else {
+        for (int i=0; i< numberOfElements; i++) {
+            data.push_back(-1);
+        }
+    }
+
+    int d = (int)log2(P);
     int mask = pow(2, d) - 1;
     int low = 0;
     int high = data.size() - 1;
@@ -240,6 +229,7 @@ int main(int argc, char** argv) {
             }
         }
     }
+
     MPI_Barrier(MPI_COMM_WORLD);
 
     int token = 566;
