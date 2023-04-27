@@ -192,7 +192,7 @@ int main(int argc, char** argv) {
     //Broadcast elements:
     MPI_Bcast(&data, numberOfElements, MPI_INT, 0, MPI_COMM_WORLD);
 
-    int d = getD(P);
+    int d = log2(P);
     int mask = pow(2, d) - 1;
     int low = 0;
     int high = data.size() - 1;
