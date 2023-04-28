@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -N pi_jason
+#PBS -N qs_jvum
 #PBS -l walltime=00:00:15
 #PBS -l nodes=4:ppn=1
 #PBS -q edu_shared
@@ -19,5 +19,4 @@ mpic++ qs.cpp
 #
 # Run mpi job
 #
-# mpirun -np $PBS_NP ./pi_jason
 mpirun ./a.out 16
