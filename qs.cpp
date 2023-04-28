@@ -3,6 +3,7 @@
 #include <unistd.h> 
 #include <iostream>
 #include <vector>
+#include <fstream>
 #include <math.h>
 #include <queue>
 
@@ -129,10 +130,20 @@ void sort_and_print(vector<int>& arr, int low, int high, int id) {
         v.push_back(arr[i]);
     }
     insertion_sort(v);
-    for (int i = 0; i < v.size(); i++) {
-        printf("%d ", v[i]);
+
+    ofstream output_file("output.txt", id == 0 ? std::ios_base::out : std::ios_base::app);
+    if (output_file.is_open()) {
+        if (id == 0) {
+            output_file << "Sorted data" << endl;
+        }
+        for (int i = 0; i < v.size(); i++) {
+            output_file << v[i] << endl;
+        }
+        output_file.close();
+    } else {
+        cout << "Unable to open file";
     }
-    printf("\n");
+    
 
     // Tester code - get largest/smallest k elements   
         // int optimal = 2;
@@ -377,6 +388,11 @@ int main(int argc, char** argv) {
         // send the token to the next proc
         if (myid < P - 1) {
             MPI_Send(&token, 1, MPI_INT, myid + 1, TOKEN, MPI_COMM_WORLD);
+        }
+
+        // print out a complete message
+        if (myid == (P - 1)) {
+            printf("Sorting complete. \n");
         }
     }
 
