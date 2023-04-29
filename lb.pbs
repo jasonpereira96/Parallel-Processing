@@ -1,0 +1,20 @@
+#!/bin/bash
+#PBS -N lb
+#PBS -l walltime=00:03:00
+#PBS -l nodes=1:ppn=8
+#PBS -q edu_shared
+#PBS -j oe
+#PBS -V
+
+#
+## Move to the directory where the job was submitted
+#
+cd $PBS_O_WORKDIR
+#
+#  setup MPI programming environment
+#
+module load MPICH/3.3.2-GCC-9.3.0
+#
+# Run mpi job
+#
+mpirun -np $PBS_NP ./lb 160
