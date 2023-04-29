@@ -285,6 +285,19 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& a
                 MPI_Recv(&recvElements, numberOfElements, MPI_INT, pid - 1, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
                 // Merge recieved elements to the start of the array
                 if (sizeof(recvElements) > 0) {
+                    //debugging code
+                    for (int k = 0; k < numberOfElements; k++)
+                    {
+                        for (int l = 0; l < localArray.size(); l++)
+                        {
+                            if (recvElements[k] > localArray[l])
+                            {
+                                printf("\nERROR: MYID = %d RecvElements[%d] = %d > localArray[%d] = %d\n", pid, k, recvElements[k], l, localArray[l]);
+                            }
+                        }
+                    }
+                    // debuggin code ends
+
                     //printf("\nMYID = %d; Recv Actual Elements from %d: ",pid, pid - 1);
                     for (int i = 0; i < numberOfElements; i++) {
                         //printf("%d ", recvElements[i]);
@@ -391,7 +404,19 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& a
                 MPI_Recv(&recvElements, numberOfElements, MPI_INT, pid + 1, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
                 // Merge recieved elements to the start of the array
                 if (sizeof(recvElements) > 0) {
-                    //printf("\nMYID = %d; Recv Actual Elements from %d: ",pid, pid-1);
+                    //debugging code
+                    for (int k = 0; k < numberOfElements; k++)
+                    {
+                        for (int l = 0; l < localArray.size(); l++)
+                        {
+                            if (recvElements[k] < localArray[l])
+                            {
+                                printf("\nERROR: MYID = %d RecvElements[%d] = %d < localArray[%d] = %d from ID = %d\n", pid, k, recvElements[k], l, localArray[l], pid + 1);
+                            }
+                        }
+                    }
+                    // debuggin code ends
+                   //printf("\nMYID = %d; Recv Actual Elements from %d: ",pid, pid-1);
                     for (int i = 0; i < numberOfElements; i++) {
                         //printf("%d ", recvElements[i]);
                         localArray.push_back(recvElements[i]);
