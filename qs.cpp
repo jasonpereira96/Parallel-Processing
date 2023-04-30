@@ -158,7 +158,7 @@ vector<int> kSmallestHeap(vector<int>& v, int N, int K)
 
 vector<int> kLargest(vector<int>& v, int N, int K) {
     if (USE_QUICKSELECT) {
-        cout << "Using Quickselect" << endl;
+        // cout << "Using Quickselect" << endl;
         return kLargestQuickselect(v, N, K);
     }
     return kLargestHeap(v, N, K);
@@ -166,7 +166,7 @@ vector<int> kLargest(vector<int>& v, int N, int K) {
 
 vector<int> kSmallest(vector<int>& v, int N, int K) {
     if (USE_QUICKSELECT) {
-        cout << "Using Quickselect" << endl;
+        // cout << "Using Quickselect" << endl;
         return kSmallestQuickselect(v, N, K);
     }
     return kSmallestHeap(v, N, K);
