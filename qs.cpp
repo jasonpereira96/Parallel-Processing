@@ -6,12 +6,15 @@
 #include <fstream>
 #include <math.h>
 #include <queue>
+#include <algorithm>
 
 using namespace std;
 
 const int METADATA = 2;
 const int DATA = 1;
 const int TOKEN = 3;
+
+const bool USE_QUICKSELECT = true;
 
 void printa(vector<int>& arr) {
     for (int i = 0; i < arr.size(); i++) {
@@ -33,6 +36,14 @@ void swap(int& a, int& b) {
     int temp = a;
     a = b;
     b = temp;
+}
+
+bool compLessThan(int a, int b) {
+    return a < b;
+}
+
+bool compGreaterThan(int a, int b) {
+    return a > b;
 }
 
 
@@ -82,7 +93,29 @@ void insertion_sort(vector<int>& arr) {
     }
 }
 
-vector<int> kLargest(vector<int>& v, int N, int K)
+vector<int> kSmallestQuickselect(vector<int>& v, int N, int K) {
+    std::vector<int> v2(v);
+    std::nth_element(v2.begin(), v2.begin() + K - 1, v2.end(), compLessThan);
+    std::vector<int> res(K);
+
+    for (int i=0; i<K; i++) {
+        res[i] = v2[i];
+    }
+    return res;
+}
+
+vector<int> kLargestQuickselect(vector<int>& v, int N, int K) {
+    std::vector<int> v2(v);
+    std::nth_element(v2.begin(), v2.begin() + K - 1, v2.end(), compGreaterThan);
+    std::vector<int> res(K);
+
+    for (int i=0; i<K; i++) {
+        res[i] = v2[i];
+    }
+return res;
+}
+
+vector<int> kLargestHeap(vector<int>& v, int N, int K)
 {
     vector<int> res;
     if (N == 0) {
@@ -103,7 +136,7 @@ vector<int> kLargest(vector<int>& v, int N, int K)
     return res;
 }
 
-vector<int> kSmallest(vector<int>& v, int N, int K)
+vector<int> kSmallestHeap(vector<int>& v, int N, int K)
 {
     vector<int> res;
     if (N == 0) {
@@ -121,6 +154,23 @@ vector<int> kSmallest(vector<int>& v, int N, int K)
         pq.pop();
     }
     return res;
+}
+
+vector<int> kLargest(vector<int>& v, int N, int K) {
+    if (USE_QUICKSELECT) {
+        // cout << "Using Quickselect" << endl;
+        return kLargestQuickselect(v, N, K);
+    }
+    return kLargestHeap(v, N, K);
+}
+
+vector<int> kSmallest(vector<int>& v, int N, int K) {
+    if (USE_QUICKSELECT) {
+        // cout << "Using Quickselect" << endl;
+        return kSmallestQuickselect(v, N, K);
+    }
+    return kSmallestHeap(v, N, K);
+
 }
 
 void sort_and_print(vector<int>& arr, int low, int high, int id) {
