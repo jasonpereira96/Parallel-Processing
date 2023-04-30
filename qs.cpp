@@ -416,7 +416,7 @@ int main(int argc, char** argv) {
     }
 
     MPI_Barrier(MPI_COMM_WORLD);
-    // loadbalancing(data.size(), P, data, low, high, myid);
+    loadbalancing(data.size(), P, data, low, high, myid);
     int token = 566;
 
     // Sequential token passing that prints all the elements in each processor
