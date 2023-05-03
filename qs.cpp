@@ -553,6 +553,14 @@ vector<int> generatRandomElements(int numberOfElements, bool unique = true) {
     return data;
 }
 
+vector<int> slice(vector<int>& v, int low, int high) {
+    if (low > high) {
+        cout << "Invalid indexes to slice" << endl;
+        throw std::runtime_error("Invalid indexes to slice");
+    }
+    return std::vector<int>(v.begin() + low, v.end() - (v.size() - high - 1));
+}
+
 int main(int argc, char** argv) {
 
     // Set the seed, optional
@@ -572,10 +580,12 @@ int main(int argc, char** argv) {
     vector<int> data;
 
     // read the value of numberOfElements
-    numberOfElements = atoi(argv[1]);
+    // numberOfElements = atoi(argv[1]);
 
     if (myid == 0) {
-        data = generatRandomElements(numberOfElements);
+        // data = generatRandomElements(numberOfElements);
+        data = {2,15,14,3,12,11,1,9,16,7,6,5,4,13,10,8};
+
     }
     else {
         for (int i = 0; i < numberOfElements; i++) {
@@ -635,15 +645,19 @@ int main(int argc, char** argv) {
 
     MPI_Barrier(MPI_COMM_WORLD);
     vector<int> balanceddata;
-    balanceddata = loadbalancing(data.size(), P, data, low, high, myid);
-    printf("\nMYID = %d, balanced data = %d\n", myid, balanceddata.size());
+    // balanceddata = loadbalancing(data.size(), P, data, low, high, myid);
+    balanceddata = data;
+    // printf("\nMYID = %d, balanced data = %d\n", myid, balanceddata.size());
     int token = 566;
 
     // Sequential token passing that prints all the elements in each processor
 
     if (myid == 0) {
         //sort_and_print(data, low, high, myid);
-        sort_and_print(balanceddata, myid);
+        // std::vector<int> p (data.begin() + low, data.end() - high);
+        vector<int> f = slice(balanceddata, low, high);
+        sort_and_print(f, myid);
+        // sort_and_print_old(data, low, high, myid);
         // start sending the token from proc 0
         MPI_Send(&token, 1, MPI_INT, myid + 1, TOKEN, MPI_COMM_WORLD);
     }
@@ -654,7 +668,11 @@ int main(int argc, char** argv) {
 
         // print out this procs elements
         //sort_and_print(data, low, high, myid);
-        sort_and_print(balanceddata, myid);
+        // std::vector<int> p (data.begin() + low, data.end() - high);
+        vector<int> f = slice(balanceddata, low, high);
+        sort_and_print(f, myid);
+        // sort_and_print_old(data, low, high, myid);
+        // sort_and_print(balanceddata, myid);
         // send the token to the next proc
         if (myid < P - 1) {
             MPI_Send(&token, 1, MPI_INT, myid + 1, TOKEN, MPI_COMM_WORLD);
