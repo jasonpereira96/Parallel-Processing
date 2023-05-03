@@ -649,8 +649,13 @@ int main(int argc, char** argv) {
 
     MPI_Barrier(MPI_COMM_WORLD);
     vector<int> balanceddata;
+    
+    // load balancing
     // balanceddata = loadbalancing(data.size(), P, data, low, high, myid);
-    balanceddata = data;
+
+    // without load balancing
+    balanceddata = slice(data, low, high);
+    
     printf("\nMYID = %d, balanced data = %d\n", myid, balanceddata.size());
     int token = 566;
 
@@ -659,13 +664,10 @@ int main(int argc, char** argv) {
     if (myid == 0) {
         printf("id: %d, low: %d, high: %d \n", myid, low, high);
         if (low <= high) {
-            // TODO: change the args of slice() if load balancing is on
-            vector<int> f = slice(balanceddata, low, high);
-            sort_and_print(f, myid);
+            sort_and_print(balanceddata, myid);
         } else {
             printf("Hello from %d, nothing to print \n", myid);
         }
-        // sort_and_print_old(data, low, high, myid);
         // start sending the token from proc 0
         MPI_Send(&token, 1, MPI_INT, myid + 1, TOKEN, MPI_COMM_WORLD);
     }
@@ -677,12 +679,11 @@ int main(int argc, char** argv) {
         // print out this procs elements
         printf("id: %d, low: %d, high: %d \n", myid, low, high);
         if (low <= high) {
-            vector<int> f = slice(balanceddata, low, high);
-            sort_and_print(f, myid);
+            sort_and_print(balanceddata, myid);
         } else {
             printf("Hello from %d, nothing to print \n", myid);
         }
-        // sort_and_print_old(data, low, high, myid);
+
         // send the token to the next proc
         if (myid < P - 1) {
             MPI_Send(&token, 1, MPI_INT, myid + 1, TOKEN, MPI_COMM_WORLD);
