@@ -271,7 +271,7 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& a
     for (int i = low; i <= high; i++) {
         localArray.push_back(arr[i]);
     }
-    // printf("\nMYID = %d, unbalanced data = %d\n", pid, localArray.size());
+    printf("\nMYID = %d, unbalanced data = %d\n", pid, localArray.size());
     // for(int i=0; i<localArray.size(); i++) {
     //     printf("%d ", localArray[i]);
     // }
@@ -403,7 +403,7 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& a
         MPI_Barrier(MPI_COMM_WORLD);
     }
     //MPI_Barrier(MPI_COMM_WORLD);
-    // printf("\nStarting right to left load balancing. MYID = %d; LocalArray = %d\n", pid, localArray.size());
+    printf("\nStarting right to left load balancing. MYID = %d; LocalArray = %d\n", pid, localArray.size());
     /*---------------------------------Right to left load balancing---------------------------------
 
     We now proceed with load balancing in the reverse direction. This is done to ensure that no processor is left with a large number of elements.
@@ -523,7 +523,7 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& a
     }
     MPI_Barrier(MPI_COMM_WORLD);
     printf("\n-------------------------------------------------\n");
-    // printf("\nMYID = %d, localArray = %d\n", pid, localArray.size());
+    printf("\nMYID = %d, localArray = %d\n", pid, localArray.size());
     // for(int j=0; j<localArray.size(); j++) {
     //         printf("%d ", localArray[j]);
     // }
@@ -651,7 +651,7 @@ int main(int argc, char** argv) {
     vector<int> balanceddata;
     // balanceddata = loadbalancing(data.size(), P, data, low, high, myid);
     balanceddata = data;
-    // printf("\nMYID = %d, balanced data = %d\n", myid, balanceddata.size());
+    printf("\nMYID = %d, balanced data = %d\n", myid, balanceddata.size());
     int token = 566;
 
     // Sequential token passing that prints all the elements in each processor
