@@ -218,9 +218,9 @@ void sort_and_print(vector<int>& arr, int id) {
     vector<int> v;
     printf("Hello from %d \n", id);
     insertion_sort(arr);
-    for (int i = 0; i < arr.size(); i++) {
-        printf("%d ", arr[i]);
-    }
+    // for (int i = 0; i < arr.size(); i++) {
+    //     printf("%d ", arr[i]);
+    // }
     // my code
     ofstream output_file("output.txt", id == 0 ? std::ios_base::out : std::ios_base::app);
     if (output_file.is_open()) {
@@ -231,7 +231,8 @@ void sort_and_print(vector<int>& arr, int id) {
             output_file << arr[i] << endl;
         }
         output_file.close();
-    } else {
+    }
+    else {
         cout << "Unable to open file";
     }
     printf("\n");
@@ -264,13 +265,13 @@ vector<int> remove(vector<int>& v, vector<int>& extraElements, bool withDuplicat
     return result;
 }
 
-vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& arr, int low, int high, int pid) {
+vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& localArray, int pid) { //int low, int high,
     //printf("Starting load balancing");
     MPI_Request request;
-    vector<int> localArray;
-    for (int i = low; i <= high; i++) {
-        localArray.push_back(arr[i]);
-    }
+    // vector<int> localArray;
+    // for (int i = low; i <= high; i++) {
+    //     localArray.push_back(arr[i]);
+    // }
     printf("\nMYID = %d, unbalanced data = %d\n", pid, localArray.size());
     // for(int i=0; i<localArray.size(); i++) {
     //     printf("%d ", localArray[i]);
@@ -383,7 +384,7 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& a
                         {
                             if (recvElements[k] > localArray[l])
                             {
-                                printf("\nERROR: MYID = %d RecvElements[%d] = %d > localArray[%d] = %d\n", pid, k, recvElements[k], l, localArray[l]);
+                                printf("\nERROR: MYID = %d RecvElements[%d] = %d > localArray[%d] = %d from ID = %d\n", pid, k, recvElements[k], l, localArray[l], pid - 1);
                             }
                         }
                     }
@@ -613,7 +614,7 @@ int main(int argc, char** argv) {
 
                 // send the elements themselves
                 if (n_elements > 0) {
-                    MPI_Send(&data[pivot_index], n_elements, MPI_INT, destination, DATA, MPI_COMM_WORLD);    
+                    MPI_Send(&data[pivot_index], n_elements, MPI_INT, destination, DATA, MPI_COMM_WORLD);
                 }
 
                 high = pivot_index - 1;
@@ -633,7 +634,7 @@ int main(int argc, char** argv) {
 
                 // recv elements from a proc and copy them into the section of the array where they belong
                 if (n_elements > 0) {
-                    MPI_Recv(els, n_elements, MPI_INT, source, DATA, MPI_COMM_WORLD, MPI_STATUS_IGNORE);    
+                    MPI_Recv(els, n_elements, MPI_INT, source, DATA, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
                 }
 
                 for (int j = 0; j < n_elements; j++) {
@@ -649,13 +650,16 @@ int main(int argc, char** argv) {
 
     MPI_Barrier(MPI_COMM_WORLD);
     vector<int> balanceddata;
-    
+
     // load balancing
     // balanceddata = loadbalancing(data.size(), P, data, low, high, myid);
 
     // without load balancing
     balanceddata = slice(data, low, high);
-    
+
+    //with load balancing
+    balanceddata = loadbalancing(data.size(), P, balanceddata, myid);
+
     printf("\nMYID = %d, balanced data = %d\n", myid, balanceddata.size());
     int token = 566;
 
@@ -665,7 +669,8 @@ int main(int argc, char** argv) {
         printf("id: %d, low: %d, high: %d \n", myid, low, high);
         if (low <= high) {
             sort_and_print(balanceddata, myid);
-        } else {
+        }
+        else {
             printf("Hello from %d, nothing to print \n", myid);
         }
         // start sending the token from proc 0
@@ -680,7 +685,8 @@ int main(int argc, char** argv) {
         printf("id: %d, low: %d, high: %d \n", myid, low, high);
         if (low <= high) {
             sort_and_print(balanceddata, myid);
-        } else {
+        }
+        else {
             printf("Hello from %d, nothing to print \n", myid);
         }
 
