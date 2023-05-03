@@ -234,13 +234,15 @@ vector<int> remove(vector<int>& v, vector<int>& extraElements, bool withDuplicat
                 result.push_back(element);
             }
         }
-    } else {
+    }
+    else {
         std::unordered_set<int> removedElements;
 
         for (int element : v) {
             if (s.count(element) == 1 && removedElements.count(element) == 0) { // it needs to be removed and is not removed yet
                 removedElements.insert(element);
-            } else {
+            }
+            else {
                 result.push_back(element);
             }
         }
@@ -340,11 +342,12 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& a
                     //>> 2. Remove extraElements elements from localArray
                     //localArray = remove(localArray, extraElements);
                     //printf("\nMYID = %d; Send Actual Elements to %d: ",pid, pid+1);
-                    for (int i = 0; i < extraElementsSize; i++)
-                    {
-                        //printf("%d ", extraElementsVec[i]);
-                        localArray.pop_back();//This needs to be replaced with actual code to remove those specific elements
-                    }
+                    // for (int i = 0; i < extraElementsSize; i++)
+                    // {
+                    //     //printf("%d ", extraElementsVec[i]);
+                    //     localArray.pop_back();//This needs to be replaced with actual code to remove those specific elements
+                    // }
+                    localArray = remove(localArray, extraElementsVec, true);
                     //printf("\n");
                     //>> 3. Send extraElements to next processor
                     MPI_Isend(&extraElements, extraElementsSize, MPI_INT, pid + 1, 2, MPI_COMM_WORLD, &request);
@@ -460,11 +463,12 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& a
                     //localArray = remove(localArray, extraElements);
                     //>> 3. Send extraElements to next processor
                     //printf("\nMYID = %d; Send Actual Elements to %d: ",pid, pid-1);
-                    for (int i = 0; i < extraElementsSize; i++)
-                    {
-                        //printf("%d ", extraElementsVec[i]);
-                        localArray.erase(localArray.begin());
-                    }
+                    // for (int i = 0; i < extraElementsSize; i++)
+                    // {
+                    //     //printf("%d ", extraElementsVec[i]);
+                    //     localArray.erase(localArray.begin());
+                    // }
+                    localArray = remove(localArray, extraElementsVec, true);
                     //printf("\n");
                     MPI_Isend(&extraElements, extraElementsSize, MPI_INT, pid - 1, 2, MPI_COMM_WORLD, &request);
                     //MPI_Send(&extraElements, extraElementsSize, MPI_INT, pid - 1, 2, MPI_COMM_WORLD);
