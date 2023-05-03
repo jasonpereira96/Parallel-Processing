@@ -1,2 +1,3 @@
-mpic++ qs.cpp
-mpiexec -n 4 ./a.out 16
+rm qs.out
+mpic++ qs.cpp -o qs.out
+mpiexec -n 4 ./qs.out 16

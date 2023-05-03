@@ -15,8 +15,9 @@ module load MPICH/3.3.2-GCC-9.3.0
 #
 # Build mpi job
 #
-mpic++ qs.cpp
+rm qs.out
+mpic++ qs.cpp -o qs.out
 #
 # Run mpi job
 #
-mpirun ./a.out 16
+mpirun ./qs.out 16
