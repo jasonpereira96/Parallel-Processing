@@ -7,6 +7,8 @@
 #include <math.h>
 #include <queue>
 #include <algorithm>
+#include <unordered_map>
+#include <unordered_set>
 
 using namespace std;
 
@@ -221,6 +223,30 @@ void sort_and_print(vector<int>& arr, int id) {
     printf("\n");
 }
 
+
+vector<int> remove(vector<int>& v, vector<int>& extraElements, bool withDuplicates = true) {
+    vector<int> result;
+    std::unordered_set<int> s(extraElements.begin(), extraElements.end());
+
+    if (withDuplicates) {
+        for (int element : v) {
+            if (s.count(element) != 1) {
+                result.push_back(element);
+            }
+        }
+    } else {
+        std::unordered_set<int> removedElements;
+
+        for (int element : v) {
+            if (s.count(element) == 1 && removedElements.count(element) == 0) { // it needs to be removed and is not removed yet
+                removedElements.insert(element);
+            } else {
+                result.push_back(element);
+            }
+        }
+    }
+    return result;
+}
 
 vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& arr, int low, int high, int pid) {
     //printf("Starting load balancing");
