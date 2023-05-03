@@ -271,7 +271,7 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& a
     for (int i = low; i <= high; i++) {
         localArray.push_back(arr[i]);
     }
-    printf("\nMYID = %d, unbalanced data = %d\n", pid, localArray.size());
+    // printf("\nMYID = %d, unbalanced data = %d\n", pid, localArray.size());
     // for(int i=0; i<localArray.size(); i++) {
     //     printf("%d ", localArray[i]);
     // }
@@ -403,7 +403,7 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& a
         MPI_Barrier(MPI_COMM_WORLD);
     }
     //MPI_Barrier(MPI_COMM_WORLD);
-    printf("\nStarting right to left load balancing. MYID = %d; LocalArray = %d\n", pid, localArray.size());
+    // printf("\nStarting right to left load balancing. MYID = %d; LocalArray = %d\n", pid, localArray.size());
     /*---------------------------------Right to left load balancing---------------------------------
 
     We now proceed with load balancing in the reverse direction. This is done to ensure that no processor is left with a large number of elements.
@@ -523,7 +523,7 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& a
     }
     MPI_Barrier(MPI_COMM_WORLD);
     printf("\n-------------------------------------------------\n");
-    printf("\nMYID = %d, localArray = %d\n", pid, localArray.size());
+    // printf("\nMYID = %d, localArray = %d\n", pid, localArray.size());
     // for(int j=0; j<localArray.size(); j++) {
     //         printf("%d ", localArray[j]);
     // }
@@ -580,12 +580,17 @@ int main(int argc, char** argv) {
     vector<int> data;
 
     // read the value of numberOfElements
-    // numberOfElements = atoi(argv[1]);
+    numberOfElements = atoi(argv[1]);
 
     if (myid == 0) {
-        // data = generatRandomElements(numberOfElements);
-        data = {2,15,14,3,12,11,1,9,16,7,6,5,4,13,10,8};
-
+        data = generatRandomElements(numberOfElements, false);
+        printf("data generated: \n");
+        for (int c: data) {
+            printf("%d, ", c);
+        }
+        printf("\n");
+        // data = {2,15,14,3,12,11,1,9,16,7,6,5,4,13,10,8};
+        // data = {8,2,3,4,5,6,7,1,9,10,11,12,13,14,15,16};
     }
     else {
         for (int i = 0; i < numberOfElements; i++) {
@@ -608,7 +613,7 @@ int main(int argc, char** argv) {
 
                 int n_elements = high - pivot_index + 1;
 
-                //send data[pivot_index : high] to msg destination
+                //send n_elements to msg destination
                 MPI_Send(&n_elements, 1, MPI_INT, destination, METADATA, MPI_COMM_WORLD);
 
                 // send the elements themselves
@@ -655,8 +660,11 @@ int main(int argc, char** argv) {
     if (myid == 0) {
         //sort_and_print(data, low, high, myid);
         // std::vector<int> p (data.begin() + low, data.end() - high);
-        vector<int> f = slice(balanceddata, low, high);
-        sort_and_print(f, myid);
+        printf("id: %d, low: %d, high: %d \n", myid, low, high);
+        if (low <= high) {
+            vector<int> f = slice(balanceddata, low, high);
+            sort_and_print(f, myid);
+        }
         // sort_and_print_old(data, low, high, myid);
         // start sending the token from proc 0
         MPI_Send(&token, 1, MPI_INT, myid + 1, TOKEN, MPI_COMM_WORLD);
@@ -669,8 +677,11 @@ int main(int argc, char** argv) {
         // print out this procs elements
         //sort_and_print(data, low, high, myid);
         // std::vector<int> p (data.begin() + low, data.end() - high);
-        vector<int> f = slice(balanceddata, low, high);
-        sort_and_print(f, myid);
+        printf("id: %d, low: %d, high: %d \n", myid, low, high);
+        if (low <= high) {
+            vector<int> f = slice(balanceddata, low, high);
+            sort_and_print(f, myid);
+        }
         // sort_and_print_old(data, low, high, myid);
         // sort_and_print(balanceddata, myid);
         // send the token to the next proc
