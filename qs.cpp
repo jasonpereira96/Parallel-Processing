@@ -221,6 +221,19 @@ void sort_and_print(vector<int>& arr, int id) {
     for (int i = 0; i < arr.size(); i++) {
         printf("%d ", arr[i]);
     }
+    // my code
+    ofstream output_file("output.txt", id == 0 ? std::ios_base::out : std::ios_base::app);
+    if (output_file.is_open()) {
+        if (id == 0) {
+            output_file << "Sorted data" << endl;
+        }
+        for (int i = 0; i < arr.size(); i++) {
+            output_file << arr[i] << endl;
+        }
+        output_file.close();
+    } else {
+        cout << "Unable to open file";
+    }
     printf("\n");
 }
 
