@@ -8,6 +8,7 @@
 #include <queue>
 #include <algorithm>
 #include <unordered_map>
+#include <ctime>        // std::time
 #include <unordered_set>
 
 using namespace std;
@@ -518,8 +519,20 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& a
     return localArray;
 }
 
+vector<int> generateRandomUnique(int numberOfElements) {
+    vector<int> data;
+    for (int i = 0; i < numberOfElements; i++) {
+        data.push_back(i + 1);
+    }
+    // using built-in random generator:
+    std::random_shuffle(data.begin(), data.end());
+    return data;
+}
 
-vector<int> generatRandomElements(int numberOfElements) {
+vector<int> generatRandomElements(int numberOfElements, bool unique = true) {
+    if (unique) {
+        return generateRandomUnique(numberOfElements);
+    }
     vector<int> data;
     for (int i = 0; i < numberOfElements; i++) {
         data.push_back(rand() % 1000);
@@ -528,6 +541,10 @@ vector<int> generatRandomElements(int numberOfElements) {
 }
 
 int main(int argc, char** argv) {
+
+    // Set the seed, optional
+    std::srand(unsigned(std::time(0)));
+
 
     // Initialize the MPI environment
     MPI_Init(NULL, NULL);
