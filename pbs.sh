@@ -1,7 +1,7 @@
 #!/bin/bash
 #PBS -N qs_jvum
 #PBS -l walltime=00:00:15
-#PBS -l nodes=4:ppn=1
+#PBS -l nodes=4:ppn=2
 #PBS -q edu_shared
 #PBS -j oe
 #
