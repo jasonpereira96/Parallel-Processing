@@ -593,10 +593,10 @@ int main(int argc, char** argv) {
 
     int numberOfElements = 16; // default value
     vector<int> data;
-
+    double start, end;
     // read the value of numberOfElements
     numberOfElements = atoi(argv[1]);
-
+    lbflag = atoi(argv[3]);//0 = no lb; 1 = lb
 
     if (myid == 0) {
         data = readFile(argv[1]);
@@ -631,7 +631,9 @@ int main(int argc, char** argv) {
     
     MPI_Barrier(MPI_COMM_WORLD);
     vector<int> balanceddata;
-
+    if (myid == 0) {
+        start = MPI_Wtime();
+    }
     // load balancing
     // balanceddata = loadbalancing(data.size(), P, data, low, high, myid);
 
@@ -639,7 +641,11 @@ int main(int argc, char** argv) {
     balanceddata = data;
 
     //with load balancing
-    // balanceddata = loadbalancing(data.size(), P, balanceddata, myid);
+    if (lbflag == 1)
+    {
+        balanceddata = loadbalancing(data.size(), P, balanceddata, myid);
+    }
+    
     cout << "After LB" << endl;
     for (int i=0; i<balanceddata.size(); i++) {
         cout << balanceddata[i] << " ";
@@ -685,7 +691,11 @@ int main(int argc, char** argv) {
             printf("Sorting complete. \n");
         }
     }
-
+    if (myid == 0)
+    {
+        end = MPI_Wtime();
+        printf("\nTime taken = %f\n", end - start);
+    }
     // Finalize the MPI environment.
     MPI_Finalize();
 
