@@ -19,7 +19,7 @@ const int DATA = 1;
 const int TOKEN = 3;
 
 const bool USE_QUICKSELECT = false;
-const bool DEBUG_MODE = false;
+const bool DEBUG_MODE = true;
 
 void dprintf(const char* format, ...) {
     if (DEBUG_MODE) {
@@ -308,13 +308,14 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& l
     for(int i=0; i<localArray.size(); i++) {
         dprintf("%d ", localArray[i]);
     }
-    //int totalElements = 0;
+
     int optimalSize = totalElements / totalProcessors;
     int docontinue = 1;
     int mycontinue = 0;
     int extraElementsSize = 0;
     int numberOfElements = 0;
     int counter = 0;
+
     //Left to right load balancing
     while (docontinue > 0)
     {
@@ -366,11 +367,12 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& l
         }
         MPI_Barrier(MPI_COMM_WORLD);
         int sum = 0;
-        MPI_Reduce(&mycontinue, &docontinue, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
-        MPI_Bcast(&docontinue, 1, MPI_INT, 0, MPI_COMM_WORLD);
+        
+        MPI_Allreduce(&mycontinue , &docontinue , 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+
         dprintf("\nMYID %d reached Barrier 1\n", pid);
         dprintf("\nMYID = %d, docontinue = %d\n", pid, docontinue);
-        MPI_Barrier(MPI_COMM_WORLD);
+        
         if (counter > 9) {
             break;
         }
