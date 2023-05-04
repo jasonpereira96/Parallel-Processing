@@ -21,4 +21,4 @@ mpic++ qs.cpp -o qs.out
 #
 # Run mpi job
 #
-mpirun ./qs.out 16
+mpirun ./qs.out A_vector_30_8_4.txt pivot_vector_30_8_4.txt
