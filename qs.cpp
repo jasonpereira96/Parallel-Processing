@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <unistd.h> 
 #include <iostream>
+#include <sstream>
 #include <vector>
 #include <fstream>
 #include <math.h>
@@ -20,6 +21,93 @@ const int TOKEN = 3;
 
 const bool USE_QUICKSELECT = false;
 const bool DEBUG_MODE = false;
+
+
+int p = 0;
+vector<vector<int>> alldata;
+
+vector<int> readFile(string filename) {
+    ifstream infile(filename);
+    
+    if (!infile.is_open()) {
+        throw std::runtime_error("Error: failed to open input file");
+    }
+    
+    vector<int> numbers;
+    string line;
+    while (getline(infile, line)) {
+        istringstream iss(line);
+        string token;
+        while (getline(iss, token, ',')) {
+            int num;
+            try {
+                num = stoi(token);
+            } catch (const invalid_argument& ia) {
+                cerr << "Error: invalid integer value " << token << " in input file " << filename << endl;
+                throw std::runtime_error("Error: failed to open input file");
+            } catch (const out_of_range& oor) {
+                cerr << "Error: integer value " << token << " out of range in input file " << filename << endl;
+                throw std::runtime_error("Error: failed to open input file");
+            }
+            numbers.push_back(num);
+        }
+    }
+    
+    infile.close();
+    return numbers;
+}
+
+
+int partition(vector<int>& arr, int low, int high, vector<int> & pivots) {
+    // Use middle element as pivot
+    // int pivot = arr[(low + high) / 2];
+
+    if (p > pivots.size() - 1) {
+        return -1;
+    }
+    int pivot = pivots[p++];
+    int pivotIndex = find(arr.begin(), arr.end(), pivot) - arr.begin();
+
+    // cout << "pvitor: " << pivot << endl;
+    // cout << "pvitorIndex: " << pivotIndex << endl;
+
+
+    // Initialize pointers
+    int i = low;
+
+    // Move pivot element to the end of the range
+    std::swap(arr[pivotIndex], arr[high]);
+
+    // Partition the range
+    for (int j = low; j < high; j++) {
+        if (arr[j] <= pivot) {
+            std::swap(arr[i], arr[j]);
+            i++;
+        }
+    }
+
+    // Move pivot element to its final position
+    std::swap(arr[i], arr[high]);
+
+    return i;
+}
+
+
+void quicksort(vector<int>& arr, int low, int high, vector<int> & pivots) {
+    if (low < high) {
+        int p = partition(arr, low, high, pivots);
+        vector<int> v;
+        for (int i = low; i <= p; i++) {
+            cout << arr[i] << " ";
+            v.push_back(arr[i]);
+        }
+        alldata.push_back(v);
+        cout << endl;
+        if (p == -1) return;
+        // quicksort(arr, low, p - 1);
+        quicksort(arr, p + 1, high, pivots);
+    }
+}
 
 void dprintf(const char* format, ...) {
     if (DEBUG_MODE) {
@@ -61,7 +149,7 @@ bool compGreaterThan(int a, int b) {
 }
 
 
-int partition(vector<int>& arr, int low, int high) {
+int _partition(vector<int>& arr, int low, int high) {
     // Use middle element as pivot
     int pivot = arr[(low + high) / 2];
 
@@ -86,11 +174,11 @@ int partition(vector<int>& arr, int low, int high) {
 }
 
 
-void quicksort(vector<int>& arr, int low, int high) {
+void _quicksort(vector<int>& arr, int low, int high) {
     if (low < high) {
-        int p = partition(arr, low, high);
-        quicksort(arr, low, p - 1);
-        quicksort(arr, p + 1, high);
+        int p = _partition(arr, low, high);
+        _quicksort(arr, low, p - 1);
+        _quicksort(arr, p + 1, high);
     }
 }
 
@@ -608,6 +696,8 @@ int main(int argc, char** argv) {
     // Set the seed, optional
     std::srand(6);
 
+    cout << "argc: " << argc << endl;
+
 
     // Initialize the MPI environment
     MPI_Init(NULL, NULL);
@@ -624,71 +714,38 @@ int main(int argc, char** argv) {
     // read the value of numberOfElements
     numberOfElements = atoi(argv[1]);
 
+
     if (myid == 0) {
-        data = generatRandomElements(numberOfElements, false);
+        data = readFile(argv[1]);
+        vector<int> pivots = readFile(argv[2]);
+        vector<int> max_index = readFile(argv[3]);
+        
+
+        quicksort(data, 0, data.size() - 1, pivots);
+
+        for (int i=1; i < alldata.size(); i++) {
+            int size = alldata[i].size();
+            MPI_Send(&size, 1, MPI_INT, i, METADATA, MPI_COMM_WORLD);
+            MPI_Send(&alldata[i][0], size, MPI_INT, i, DATA, MPI_COMM_WORLD);
+        }
+        // proc 0 needs only the first set
+        data = alldata[0];        
+
+        // data = generatRandomElements(numberOfElements, false);
         // data = {2,15,14,3,12,11,1,9,16,7,6,5,4,13,10,8};
         // data = {8,2,3,4,5,6,7,1,9,10,11,12,13,14,15,16};
-    }
-    else {
-        for (int i = 0; i < numberOfElements; i++) {
-            data.push_back(-1);
+    } else {
+        MPI_Recv(&numberOfElements, 1, MPI_INT, 0, METADATA, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        int* els = new int[numberOfElements];
+        MPI_Recv(els, numberOfElements, MPI_INT, 0, DATA, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+        for (int i=0; i<numberOfElements; i++) {
+            data.push_back(els[i]);
         }
+        delete[] els;
     }
 
-    int d = (int)log2(P);
-    int mask = pow(2, d) - 1;
-    int low = 0;
-    int high = data.size() - 1;
-
-    for (int i = d - 1; i >= 0; i--) {
-        mask = mask ^ pow(2, i);
-
-        if ((myid & mask) == 0) {
-            if ((myid & pow(2, i)) == 0) {
-                int pivot_index = partition(data, low, high);
-                int destination = myid ^ pow(2, i);
-
-                int n_elements = high - pivot_index + 1;
-
-                //send n_elements to msg destination
-                MPI_Send(&n_elements, 1, MPI_INT, destination, METADATA, MPI_COMM_WORLD);
-
-                // send the elements themselves
-                if (n_elements > 0) {
-                    MPI_Send(&data[pivot_index], n_elements, MPI_INT, destination, DATA, MPI_COMM_WORLD);
-                }
-
-                high = pivot_index - 1;
-
-            }
-            else {
-                int source = myid ^ pow(2, i);
-                int n_elements = -1;
-
-
-                // receive the count of elements from msg source
-                MPI_Recv(&n_elements, 1, MPI_INT, source, METADATA, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
-                int* els = new int[n_elements];
-
-                int index = high + 1;
-
-                // recv elements from a proc and copy them into the section of the array where they belong
-                if (n_elements > 0) {
-                    MPI_Recv(els, n_elements, MPI_INT, source, DATA, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-                }
-
-                for (int j = 0; j < n_elements; j++) {
-                    data[--index] = els[j];
-                }
-                low = index;
-
-                // free the dynamically allocated array
-                delete[] els;
-            }
-        }
-    }
-
+    
     MPI_Barrier(MPI_COMM_WORLD);
     vector<int> balanceddata;
 
@@ -696,10 +753,15 @@ int main(int argc, char** argv) {
     // balanceddata = loadbalancing(data.size(), P, data, low, high, myid);
 
     // without load balancing
-    balanceddata = slice(data, low, high);
+    balanceddata = data;
 
     //with load balancing
-    balanceddata = loadbalancing(data.size(), P, balanceddata, myid);
+    // balanceddata = loadbalancing(data.size(), P, balanceddata, myid);
+    cout << "After LB" << endl;
+    for (int i=0; i<balanceddata.size(); i++) {
+        cout << balanceddata[i] << " ";
+    }
+    cout << endl;
 
     printf("\nMYID = %d, balanced data = %ld\n", myid, balanceddata.size());
     int token = 566;
@@ -707,8 +769,7 @@ int main(int argc, char** argv) {
     // Sequential token passing that prints all the elements in each processor
 
     if (myid == 0) {
-        printf("id: %d, low: %d, high: %d \n", myid, low, high);
-        if (low <= high) {
+        if (balanceddata.size() > 0) {
             sort_and_print(balanceddata, myid);
         }
         else {
@@ -723,8 +784,8 @@ int main(int argc, char** argv) {
         MPI_Recv(&token, 1, MPI_INT, myid - 1, TOKEN, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
         // print out this procs elements
-        printf("id: %d, low: %d, high: %d \n", myid, low, high);
-        if (low <= high) {
+        
+        if (balanceddata.size() > 0) {
             sort_and_print(balanceddata, myid);
         }
         else {
