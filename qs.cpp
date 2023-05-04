@@ -239,6 +239,26 @@ void sort_and_print(vector<int>& arr, int id) {
 }
 
 
+vector<int> remove2(vector<int>& v, vector<int>& extraElements) {
+    unordered_map<int, int> counts;
+    for (int el: extraElements) {
+        if (!counts.count(el)) {
+            counts[el] = 0;
+        }
+        counts[el]++;
+    }
+
+    vector<int> res;
+    for (int el: v) {
+        if (counts[el] && counts[el] > 0) {
+            counts[el]--;
+        } else {
+            res.push_back(el);
+        }
+    }
+    return res;
+}
+
 vector<int> remove(vector<int>& v, vector<int>& extraElements, bool withDuplicates = true) {
     vector<int> result;
     std::unordered_set<int> s(extraElements.begin(), extraElements.end());
@@ -362,7 +382,7 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& l
                     //     //printf("%d ", extraElementsVec[i]);
                     //     localArray.pop_back();//This needs to be replaced with actual code to remove those specific elements
                     // }
-                    localArray = remove(localArray, extraElementsVec, true);
+                    localArray = remove2(localArray, extraElementsVec);
                     //printf("\n");
                     //>> 3. Send extraElements to next processor
                     MPI_Isend(&extraElements, extraElementsSize, MPI_INT, pid + 1, 2, MPI_COMM_WORLD, &request);
@@ -483,7 +503,7 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& l
                     //     //printf("%d ", extraElementsVec[i]);
                     //     localArray.erase(localArray.begin());
                     // }
-                    localArray = remove(localArray, extraElementsVec, true);
+                    localArray = remove2(localArray, extraElementsVec);
                     //printf("\n");
                     MPI_Isend(&extraElements, extraElementsSize, MPI_INT, pid - 1, 2, MPI_COMM_WORLD, &request);
                     //MPI_Send(&extraElements, extraElementsSize, MPI_INT, pid - 1, 2, MPI_COMM_WORLD);
