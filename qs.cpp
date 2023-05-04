@@ -293,7 +293,7 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& l
     // for (int i = low; i <= high; i++) {
     //     localArray.push_back(arr[i]);
     // }
-    printf("\nMYID = %d, unbalanced data = %d\n", pid, localArray.size());
+    printf("\nMYID = %d, unbalanced data = %ld\n", pid, localArray.size());
     // for(int i=0; i<localArray.size(); i++) {
     //     printf("%d ", localArray[i]);
     // }
@@ -333,7 +333,7 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& l
                 // Send the number of extraElements elements to the next processor
                 // If you don't have enough elements, send 0
                 if (extraElementsSize > localArray.size()) {
-                    //printf("\nMYID = %d; Extra Elements = %d; send to %d; but don't have them; localArray = %d",pid,extraElementsSize, pid+1, localArray.size());
+                    //printf("\nMYID = %d; Extra Elements = %d; send to %d; but don't have them; localArray = %ld",pid,extraElementsSize, pid+1, localArray.size());
                     int newextraElementsSize = 0;
                     MPI_Send(&newextraElementsSize, 1, MPI_INT, pid + 1, 0, MPI_COMM_WORLD);
                     //printf("\n----------------------\n");
@@ -421,11 +421,11 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& l
                 }
             }
         }
-        //printf("\nMYID %d reached Barrier 2; counter = %d, localarray = %d\n", pid, counter, localArray.size());
+        //printf("\nMYID %d reached Barrier 2; counter = %d, localarray = %ld\n", pid, counter, localArray.size());
         MPI_Barrier(MPI_COMM_WORLD);
     }
     //MPI_Barrier(MPI_COMM_WORLD);
-    printf("\nStarting right to left load balancing. MYID = %d; LocalArray = %d\n", pid, localArray.size());
+    printf("\nStarting right to left load balancing. MYID = %d; LocalArray = %ld\n", pid, localArray.size());
     /*---------------------------------Right to left load balancing---------------------------------
 
     We now proceed with load balancing in the reverse direction. This is done to ensure that no processor is left with a large number of elements.
@@ -462,7 +462,7 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& l
                     extraElementsSize = 0;
                 }
                 if (extraElementsSize > localArray.size()) {
-                    printf("\nMYID = %d; Extra Elements = %d; send to %d; but don't have them; localArray = %d", pid, extraElementsSize, pid - 1, localArray.size());
+                    printf("\nMYID = %d; Extra Elements = %d; send to %d; but don't have them; localArray = %ld", pid, extraElementsSize, pid - 1, localArray.size());
                     int newextraElementsSize = 0;
                     MPI_Send(&newextraElementsSize, 1, MPI_INT, pid - 1, 0, MPI_COMM_WORLD);
                     //printf("\n----------------------\n");
@@ -549,12 +549,12 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& l
                 }
             }
         }
-        printf("\nMYID %d reached Barrier 4; counter = %d, localarray = %d\n", pid, counter, localArray.size());
+        printf("\nMYID %d reached Barrier 4; counter = %d, localarray = %ld\n", pid, counter, localArray.size());
         MPI_Barrier(MPI_COMM_WORLD);
     }
     MPI_Barrier(MPI_COMM_WORLD);
     printf("\n-------------------------------------------------\n");
-    printf("\nMYID = %d, localArray = %d\n", pid, localArray.size());
+    printf("\nMYID = %d, localArray = %ld\n", pid, localArray.size());
     // for(int j=0; j<localArray.size(); j++) {
     //         printf("%d ", localArray[j]);
     // }
@@ -690,7 +690,7 @@ int main(int argc, char** argv) {
     //with load balancing
     balanceddata = loadbalancing(data.size(), P, balanceddata, myid);
 
-    printf("\nMYID = %d, balanced data = %d\n", myid, balanceddata.size());
+    printf("\nMYID = %d, balanced data = %ld\n", myid, balanceddata.size());
     int token = 566;
 
     // Sequential token passing that prints all the elements in each processor
