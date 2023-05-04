@@ -595,7 +595,7 @@ int main(int argc, char** argv) {
     vector<int> data;
     double start, end;
     // read the value of numberOfElements
-    numberOfElements = atoi(argv[1]);
+    // numberOfElements = atoi(argv[1]);
     lbflag = atoi(argv[3]);//0 = no lb; 1 = lb
 
     if (myid == 0) {
