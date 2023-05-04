@@ -596,7 +596,7 @@ int main(int argc, char** argv) {
     double start, end;
     // read the value of numberOfElements
     // numberOfElements = atoi(argv[1]);
-    lbflag = atoi(argv[3]);//0 = no lb; 1 = lb
+    int lbflag = atoi(argv[3]);//0 = no lb; 1 = lb
 
     if (myid == 0) {
         data = readFile(argv[1]);
