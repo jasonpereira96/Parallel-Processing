@@ -384,19 +384,8 @@ vector<int> remove(vector<int>& v, vector<int>& extraElements, bool withDuplicat
     }
     return result;
 }
-
 vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& localArray, int pid) { //int low, int high,
-    dprintf("Starting load balancing");
     MPI_Request request;
-    // vector<int> localArray;
-    // for (int i = low; i <= high; i++) {
-    //     localArray.push_back(arr[i]);
-    // }
-    printf("\nMYID = %d, unbalanced data = %ld\n", pid, localArray.size());
-    for (int i = 0; i < localArray.size(); i++) {
-        dprintf("%d ", localArray[i]);
-    }
-    //int totalElements = 0;
     int optimalSize = totalElements / totalProcessors;
     int docontinue = 1;
     int mycontinue = 0;
@@ -409,8 +398,6 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& l
         counter++;
         if (pid == 0)
         {
-            dprintf("\n----------------------\n");
-            dprintf("Optimal Size = %d\n", optimalSize);
             extraElementsSize = localArray.size() - optimalSize;
             if (extraElementsSize < 0) {
                 extraElementsSize = 0;
@@ -418,12 +405,10 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& l
             // Send the number of extraElements elements to the next processor
             int dest = pid + 1;
             MPI_Send(&extraElementsSize, 1, MPI_INT, 1, 0, MPI_COMM_WORLD);
-            dprintf("\nMYID = %d; Extra Elements = %d; send to %d\n", pid, extraElementsSize, pid + 1);
         }
         if (pid > 0) {
             // Receive and send number of extra elements
             MPI_Recv(&numberOfElements, 1, MPI_INT, pid - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            dprintf("\nMYID = %d; Recv Extra Elements = %d; from %d\n", pid, numberOfElements, pid - 1);
             if (pid < totalProcessors - 1) {
                 extraElementsSize = localArray.size() - optimalSize + numberOfElements;
                 if (extraElementsSize < 0) {
@@ -432,15 +417,12 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& l
                 // Send the number of extraElements elements to the next processor
                 // If you don't have enough elements, send 0
                 if (extraElementsSize > localArray.size()) {
-                    dprintf("\nMYID = %d; Extra Elements = %d; send to %d; but don't have them; localArray = %ld", pid, extraElementsSize, pid + 1, localArray.size());
                     int newextraElementsSize = 0;
                     MPI_Send(&newextraElementsSize, 1, MPI_INT, pid + 1, 0, MPI_COMM_WORLD);
-                    dprintf("\n----------------------\n");
                 }
                 else
                 {
                     MPI_Send(&extraElementsSize, 1, MPI_INT, pid + 1, 0, MPI_COMM_WORLD);
-                    dprintf("\nMYID = %d; Extra Elements = %d; send to %d\n", pid, extraElementsSize, pid + 1);
                 }
             }
         }
@@ -456,9 +438,6 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& l
         int sum = 0;
         MPI_Reduce(&mycontinue, &docontinue, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
         MPI_Bcast(&docontinue, 1, MPI_INT, 0, MPI_COMM_WORLD);
-        dprintf("\nMYID %d reached Barrier 1\n", pid);
-        dprintf("\nMYID = %d, docontinue = %d\n", pid, docontinue);
-        MPI_Barrier(MPI_COMM_WORLD);
         if (counter > 9) {
             break;
         }
@@ -473,58 +452,20 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& l
                     int extraElements[extraElementsSize];
                     vector<int> extraElementsVec;
                     extraElementsVec = kLargest(localArray, localArray.size(), extraElementsSize);
-                    std::copy(extraElementsVec.begin(), extraElementsVec.end(), extraElements);
                     //>> 2. Remove extraElements elements from localArray
-                    //localArray = remove(localArray, extraElements);
-                    //printf("\nMYID = %d; Send Actual Elements to %d: ",pid, pid+1);
-                    // for (int i = 0; i < extraElementsSize; i++)
-                    // {
-                    //     //printf("%d ", extraElementsVec[i]);
-                    //     localArray.pop_back();//This needs to be replaced with actual code to remove those specific elements
-                    // }
                     localArray = remove2(localArray, extraElementsVec);
-                    dprintf("\n");
                     //>> 3. Send extraElements to next processor
-                    //MPI_Isend(extraElements, extraElementsSize, MPI_INT, pid + 1, 2, MPI_COMM_WORLD, &request);
-                    MPI_Send(extraElements, extraElementsSize, MPI_INT, pid + 1, 2, MPI_COMM_WORLD);
+                    MPI_Send(extraElementsVec.data(), extraElementsSize, MPI_INT, pid + 1, 2, MPI_COMM_WORLD);
                 }
             }
             if (numberOfElements > 0) {
-                int recvElements[numberOfElements];
-                // Recieve those elements
-                dprintf("\nMYID = %d; Waiting to Recv Actual Elements from %d: ", pid, pid - 1);
-                //MPI_Irecv(&recvElements, numberOfElements, MPI_INT, pid - 1, 2, MPI_COMM_WORLD,&request);
-                MPI_Recv(recvElements, numberOfElements, MPI_INT, pid - 1, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-                // Merge recieved elements to the start of the array
-                if (sizeof(recvElements) > 0) {
-                    //debugging code
-                    for (int k = 0; k < numberOfElements; k++)
-                    {
-                        for (int l = 0; l < localArray.size(); l++)
-                        {
-                            if (recvElements[k] > localArray[l])
-                            {
-                                printf("\nERROR: MYID = %d RecvElements[%d] = %d > localArray[%d] = %d from ID = %d\n", pid, k, recvElements[k], l, localArray[l], pid - 1);
-                            }
-                        }
-                    }
-                    // debuggin code ends
-
-                    dprintf("\nMYID = %d; Recv Actual Elements from %d: ", pid, pid - 1);
-                    for (int i = 0; i < numberOfElements; i++) {
-                        dprintf("%d ", recvElements[i]);
-                        localArray.insert(localArray.begin(), recvElements[i]);
-                        //localArray.push_back(recvElements[i]);//this is wrong -- appends to end of vector
-                    }
-                    printf("\n");
-                }
+                vector<int> recvElements(numberOfElements);
+                MPI_Recv(recvElements.data(), numberOfElements, MPI_INT, pid - 1, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                localArray.insert(localArray.end(), recvElements.begin(), recvElements.end());
             }
         }
-        dprintf("\nMYID %d reached Barrier 2; counter = %d, localarray = %ld\n", pid, counter, localArray.size());
-        MPI_Barrier(MPI_COMM_WORLD);
+        //MPI_Barrier(MPI_COMM_WORLD);
     }
-    //MPI_Barrier(MPI_COMM_WORLD);
-    printf("\nStarting right to left load balancing. MYID = %d; LocalArray = %ld\n", pid, localArray.size());
     /*---------------------------------Right to left load balancing---------------------------------
 
     We now proceed with load balancing in the reverse direction. This is done to ensure that no processor is left with a large number of elements.
@@ -540,40 +481,31 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& l
         counter++;
         if (pid == totalProcessors - 1)
         {
-            printf("\n----------------------\n");
-            printf("\nOptimal Size = %d\n", optimalSize);
             extraElementsSize = localArray.size() - optimalSize;
             if (extraElementsSize < 0) {
                 extraElementsSize = 0;
             }
             // Send the number of extraElements elements to the next processor
-            //int dest = pid - 1;
             MPI_Send(&extraElementsSize, 1, MPI_INT, pid - 1, 0, MPI_COMM_WORLD);
-            printf("\nMYID = %d; Extra Elements = %d; send to %d\n", pid, extraElementsSize, pid - 1);
         }
         if (pid < totalProcessors - 1) {
             // Receive and send number of extra elements
             MPI_Recv(&numberOfElements, 1, MPI_INT, pid + 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            printf("\nMYID = %d; Recv Extra Elements = %d; from %d\n", pid, numberOfElements, pid + 1);
             if (pid > 0) {
+                // Send the number of extraElements elements to the next processor
                 extraElementsSize = localArray.size() - optimalSize + numberOfElements;
                 if (extraElementsSize < 0) {
                     extraElementsSize = 0;
                 }
                 if (extraElementsSize > localArray.size()) {
-                    printf("\nMYID = %d; Extra Elements = %d; send to %d; but don't have them; localArray = %ld", pid, extraElementsSize, pid - 1, localArray.size());
                     int newextraElementsSize = 0;
                     MPI_Send(&newextraElementsSize, 1, MPI_INT, pid - 1, 0, MPI_COMM_WORLD);
-                    dprintf("\n----------------------\n");
                 }
                 else
                 {
                     MPI_Send(&extraElementsSize, 1, MPI_INT, pid - 1, 0, MPI_COMM_WORLD);
-                    printf("\nMYID = %d; Extra Elements = %d; send to %d\n", pid, extraElementsSize, pid - 1);
                 }
-                // Send the number of extraElements elements to the next processor
-                //MPI_Send(&extraElementsSize, 1, MPI_INT, pid - 1, 0, MPI_COMM_WORLD);
-                //printf("\nMYID = %d; Extra Elements = %d; send to %d\n",pid,extraElementsSize, pid-1);
+
             }
         }
         if (extraElementsSize > 0.2 * optimalSize)
@@ -588,11 +520,6 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& l
         int sum = 0;
         MPI_Reduce(&mycontinue, &docontinue, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
         MPI_Bcast(&docontinue, 1, MPI_INT, 0, MPI_COMM_WORLD);
-        printf("\nMYID %d reached Barrier 3\n", pid);
-        dprintf("\nMYID = %d, docontinue = %d\n", pid, docontinue);
-        MPI_Barrier(MPI_COMM_WORLD);
-        dprintf("\nMYID = %d, docontinue = %d\n", pid, docontinue);
-        //add code here to send and receive elements
         if (counter > 9) {
             break;
         }
@@ -603,61 +530,20 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& l
                 int extraElements[extraElementsSize];
                 vector<int> extraElementsVec;
                 extraElementsVec = kSmallest(localArray, localArray.size(), extraElementsSize);
-                std::copy(extraElementsVec.begin(), extraElementsVec.end(), extraElements);
                 //>> 2. Remove extraElements elements from localArray
-                //localArray = remove(localArray, extraElements);
-                //>> 3. Send extraElements to next processor
-                //printf("\nMYID = %d; Send Actual Elements to %d: ",pid, pid-1);
-                // for (int i = 0; i < extraElementsSize; i++)
-                // {
-                //     //printf("%d ", extraElementsVec[i]);
-                //     localArray.erase(localArray.begin());
-                // }
                 localArray = remove2(localArray, extraElementsVec);
-                dprintf("\n");
-                //MPI_Isend(extraElements, extraElementsSize, MPI_INT, pid - 1, 2, MPI_COMM_WORLD, &request);
-                MPI_Send(extraElements, extraElementsSize, MPI_INT, pid - 1, 2, MPI_COMM_WORLD);
+                //>> 3. Send extraElements to next processor
+                MPI_Send(extraElementsVec.data(), extraElementsSize, MPI_INT, pid - 1, 2, MPI_COMM_WORLD);
             }
             if (numberOfElements > 0) {
-                int recvElements[numberOfElements];
+                vector<int> recvElements(numberOfElements);
                 // Recieve those elements
-                printf("\nMYID = %d; Waiting to Recv Actual Elements from %d: ", pid, pid + 1);
-                //MPI_Irecv(&recvElements, numberOfElements, MPI_INT, pid + 1, 2, MPI_COMM_WORLD,&request);
-                MPI_Recv(recvElements, numberOfElements, MPI_INT, pid + 1, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-                // Merge recieved elements to the start of the array
-                if (sizeof(recvElements) > 0) {
-                    //debugging code
-                    for (int k = 0; k < numberOfElements; k++)
-                    {
-                        for (int l = 0; l < localArray.size(); l++)
-                        {
-                            if (recvElements[k] < localArray[l])
-                            {
-                                printf("\nERROR: MYID = %d RecvElements[%d] = %d < localArray[%d] = %d from ID = %d\n", pid, k, recvElements[k], l, localArray[l], pid + 1);
-                            }
-                        }
-                    }
-                    // debuggin code ends
-                    printf("\nMYID = %d; Recv Actual Elements from %d: ", pid, pid - 1);
-                    for (int i = 0; i < numberOfElements; i++) {
-                        dprintf("%d ", recvElements[i]);
-                        localArray.push_back(recvElements[i]);
-                    }
-                    printf("\n");
-                    //localArray = mergeStart(recvElements, localArray);
-                }
+                MPI_Recv(recvElements.data(), numberOfElements, MPI_INT, pid + 1, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                // Merge recieved elements to the vector
+                localArray.insert(localArray.end(), recvElements.begin(), recvElements.end());
             }
         }
-        printf("\nMYID %d reached Barrier 4; counter = %d, localarray = %ld\n", pid, counter, localArray.size());
-        MPI_Barrier(MPI_COMM_WORLD);
     }
-    MPI_Barrier(MPI_COMM_WORLD);
-    printf("\n-------------------------------------------------\n");
-    printf("\nMYID = %d, localArray = %ld\n", pid, localArray.size());
-    for (int j = 0; j < localArray.size(); j++) {
-        dprintf("%d ", localArray[j]);
-    }
-    printf("\n-------------------------------------------------\n");
     MPI_Barrier(MPI_COMM_WORLD);
     return localArray;
 }
