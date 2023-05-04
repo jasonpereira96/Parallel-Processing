@@ -1,7 +1,7 @@
 #!/bin/bash
 #PBS -N qs_jvum
 #PBS -l walltime=00:00:15
-#PBS -l nodes=4:ppn=1
+#PBS -l nodes=4:ppn=2
 #PBS -q edu_shared
 #PBS -j oe
 #
@@ -21,4 +21,4 @@ mpic++ qs.cpp -o qs.out
 #
 # Run mpi job
 #
-mpirun ./qs.out 16
+mpirun ./qs.out A_vector_30_8_4.txt pivot_vector_30_8_4.txt
