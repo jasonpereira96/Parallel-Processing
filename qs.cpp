@@ -582,9 +582,6 @@ int main(int argc, char** argv) {
     // Set the seed, optional
     std::srand(6);
 
-    cout << "argc: " << argc << endl;
-
-
     // Initialize the MPI environment
     MPI_Init(NULL, NULL);
 
@@ -604,7 +601,7 @@ int main(int argc, char** argv) {
     if (myid == 0) {
         data = readFile(argv[1]);
         vector<int> pivots = readFile(argv[2]);
-        vector<int> max_index = readFile(argv[3]);
+        // vector<int> max_index = readFile(argv[3]);
         
 
         quicksort(data, 0, data.size() - 1, pivots);
