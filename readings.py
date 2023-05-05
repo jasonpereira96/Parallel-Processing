@@ -48,14 +48,14 @@ for N in [100000]:
 				ppn = combo['ppn']
 
 				# with load balancing
-				command1 = f'qsub -l nodes={nodes}:ppn={ppn} -v afile="{afile}",bfile="{pfile}",lb="1",s={s} pbs_readings.sh' 
+				command1 = f'qsub -l nodes={nodes}:ppn={ppn} -v afile="{afile}",bfile="{pfile}",lb="1",s="{s}" pbs_readings.sh' 
 				print(command1)
 				os.system(command1)
 
 				time.sleep(SLEEP_TIME)
 
 				# without load balancing
-				command2 = f'qsub -l nodes={nodes}:ppn={ppn} -v afile="{afile}",bfile="{pfile}",lb="0",s={s} pbs_readings.sh' 
+				command2 = f'qsub -l nodes={nodes}:ppn={ppn} -v afile="{afile}",bfile="{pfile}",lb="0",s="{s}" pbs_readings.sh' 
 				print(command2)
 				os.system(command2)
 
