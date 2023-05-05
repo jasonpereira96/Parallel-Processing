@@ -39,7 +39,7 @@ for N in [100000]:
 				if key in done:
 					continue
 
-				count = count + 1 
+				count = count + 2
 				afile = f'test/A_vector_{N}_{P}_{s}.txt'
 				pfile = f'test/pivot_vector_{N}_{P}_{s}.txt'
 
