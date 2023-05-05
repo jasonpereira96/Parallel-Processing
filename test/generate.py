@@ -6,6 +6,9 @@ import subprocess
 
 count = 0 
 
+os.system("rm A_vec*")
+os.system("rm pivot*")
+
 for N in [100000, 250000, 500000, 1000000]:
 	for P in [ 2, 4, 8, 12, 16, 20, 24, 32, 40, 48, 56, 64]:
 		s_values = [P, P/2, P/4, 8, 4, 2]
