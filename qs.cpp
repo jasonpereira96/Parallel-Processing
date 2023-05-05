@@ -766,7 +766,7 @@ int main(int argc, char** argv)
                 output_file2 <<"---------------------------"<<endl;
                 output_file2 << "N= " << N << ", P=" << P << ", s="<<skew
                         << ", "
-                        << "load imbalance metric=" << endl;
+                        << "load imbalance metric=" << loadImbalanceMetric(initialSizes, N, P) << endl;
                 output_file2<<"Parallel Time w/ LB="<<end - start<<endl;
             }else{
                 output_file2<<"Parallel Time w/o LB="<<end - start<<endl;
