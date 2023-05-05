@@ -736,8 +736,7 @@ int main(int argc, char** argv)
         // start sending the token from proc 0
         MPI_Send(&token, 1, MPI_INT, myid + 1, TOKEN, MPI_COMM_WORLD);
     }
-    else
-    {
+    else {
 
         // recv the token
         MPI_Recv(&token, 1, MPI_INT, myid - 1, TOKEN, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
@@ -748,11 +747,10 @@ int main(int argc, char** argv)
             sort_and_print(balanceddata, myid, lbflag);
         }
         // send the token to the next proc
-        if (myid < P - 1)
-        {
+        if (myid < P - 1) {
             MPI_Send(&token, 1, MPI_INT, myid + 1, TOKEN, MPI_COMM_WORLD);
         }
-
+    }
     if (myid == 0)
     {
         end = MPI_Wtime();
