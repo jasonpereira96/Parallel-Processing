@@ -816,6 +816,31 @@ int main(int argc, char** argv)
 
         }
         printf("Time taken = %f\n", end - start);
+
+        string outputFileName = "output/" + std::to_string(N) + "_" + std::to_string(P) + "_" + std::to_string(skew) + "_" + (lbflag?"LB":"noLB") + "_output.txt";
+
+        ofstream output_file2(outputFileName, std::ios_base::out);
+
+        if (output_file2.is_open())
+        {
+            
+            if (lbflag ==1){
+                output_file2 <<"---------------------------"<<endl;
+                output_file2 << "N= " << N << ", P=" << P << ", s="<<skew
+                        << ", "
+                        << "load imbalance metric=" << endl;
+                output_file2<<"Parallel Time w/ LB="<<end - start<<endl;
+            }else{
+                output_file2<<"Parallel Time w/o LB="<<end - start<<endl;
+                output_file2 <<"----------------------------"<<endl;
+            }
+            
+            output_file2.close();
+        }
+        else
+        {
+            cout << "Unable to open file";
+        }
     }
     // Finalize the MPI environment.
     MPI_Finalize();
