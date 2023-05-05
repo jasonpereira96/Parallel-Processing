@@ -655,13 +655,14 @@ int main(int argc, char **argv)
     // read the value of numberOfElements
     // numberOfElements = atoi(argv[1]);
     int lbflag = atoi(argv[3]);//0 = no lb; 1 = lb
+    
 
-
+    int N;
     if (myid == 0) {
         data = readFile(argv[1]);
         vector<int> pivots = readFile(argv[2]);
         // vector<int> max_index = readFile(argv[3]);
-        
+        N= data.size();
 
         quicksort(data, 0, data.size() - 1, pivots);
 
@@ -722,9 +723,9 @@ int main(int argc, char **argv)
 
         if (output_file.is_open())
         {
-            output_file << "N= " << numberOfElements << ", P=" << P << ",s="
+            output_file << "N= " << N << ", P=" << P << ",s="
                         << " ,"
-                        << "load imbalance metric=" << endl;
+                        << "load imbalance metric=" <<lbflag <<endl;
             output_file.close();
         }
         else
