@@ -28,11 +28,11 @@ vector<vector<int>> alldata;
 
 vector<int> readFile(string filename) {
     ifstream infile(filename);
-    
+
     if (!infile.is_open()) {
         throw std::runtime_error("Error: failed to open input file");
     }
-    
+
     vector<int> numbers;
     string line;
     while (getline(infile, line)) {
@@ -42,23 +42,25 @@ vector<int> readFile(string filename) {
             int num;
             try {
                 num = stoi(token);
-            } catch (const invalid_argument& ia) {
+            }
+            catch (const invalid_argument& ia) {
                 cerr << "Error: invalid integer value " << token << " in input file " << filename << endl;
                 throw std::runtime_error("Error: failed to open input file");
-            } catch (const out_of_range& oor) {
+            }
+            catch (const out_of_range& oor) {
                 cerr << "Error: integer value " << token << " out of range in input file " << filename << endl;
                 throw std::runtime_error("Error: failed to open input file");
             }
             numbers.push_back(num);
         }
     }
-    
+
     infile.close();
     return numbers;
 }
 
 
-int partition(vector<int>& arr, int low, int high, vector<int> & pivots) {
+int partition(vector<int>& arr, int low, int high, vector<int>& pivots) {
     // Use middle element as pivot
     // int pivot = arr[(low + high) / 2];
 
@@ -93,7 +95,7 @@ int partition(vector<int>& arr, int low, int high, vector<int> & pivots) {
 }
 
 
-void quicksort(vector<int>& arr, int low, int high, vector<int> & pivots) {
+void quicksort(vector<int>& arr, int low, int high, vector<int>& pivots) {
     if (low < high) {
         int p = partition(arr, low, high, pivots);
         vector<int> v;
@@ -118,7 +120,7 @@ void dprintf(const char* format, ...) {
     }
 }
 
-void printa(vector<int> &arr)
+void printa(vector<int>& arr)
 {
     for (int i = 0; i < arr.size(); i++)
     {
@@ -141,7 +143,7 @@ int pow(int x, int p)
         return x * tmp * tmp;
 }
 
-void swap(int &a, int &b)
+void swap(int& a, int& b)
 {
     int temp = a;
     a = b;
@@ -194,7 +196,7 @@ void _quicksort(vector<int>& arr, int low, int high) {
     }
 }
 
-void insertion_sort(vector<int> &arr)
+void insertion_sort(vector<int>& arr)
 {
     int n = arr.size();
     for (int i = 1; i < n; i++)
@@ -210,7 +212,7 @@ void insertion_sort(vector<int> &arr)
     }
 }
 
-vector<int> kSmallestQuickselect(vector<int> &v, int N, int K)
+vector<int> kSmallestQuickselect(vector<int>& v, int N, int K)
 {
     std::vector<int> v2(v);
     std::nth_element(v2.begin(), v2.begin() + K - 1, v2.end(), compLessThan);
@@ -223,7 +225,7 @@ vector<int> kSmallestQuickselect(vector<int> &v, int N, int K)
     return res;
 }
 
-vector<int> kLargestQuickselect(vector<int> &v, int N, int K)
+vector<int> kLargestQuickselect(vector<int>& v, int N, int K)
 {
     std::vector<int> v2(v);
     std::nth_element(v2.begin(), v2.begin() + K - 1, v2.end(), compGreaterThan);
@@ -236,7 +238,7 @@ vector<int> kLargestQuickselect(vector<int> &v, int N, int K)
     return res;
 }
 
-vector<int> kLargestHeap(vector<int> &v, int N, int K)
+vector<int> kLargestHeap(vector<int>& v, int N, int K)
 {
     vector<int> res;
     if (N == 0)
@@ -261,7 +263,7 @@ vector<int> kLargestHeap(vector<int> &v, int N, int K)
     return res;
 }
 
-vector<int> kSmallestHeap(vector<int> &v, int N, int K)
+vector<int> kSmallestHeap(vector<int>& v, int N, int K)
 {
     vector<int> res;
     if (N == 0)
@@ -285,7 +287,7 @@ vector<int> kSmallestHeap(vector<int> &v, int N, int K)
     return res;
 }
 
-vector<int> kLargest(vector<int> &v, int N, int K)
+vector<int> kLargest(vector<int>& v, int N, int K)
 {
     if (USE_QUICKSELECT)
     {
@@ -295,7 +297,7 @@ vector<int> kLargest(vector<int> &v, int N, int K)
     return kLargestHeap(v, N, K);
 }
 
-vector<int> kSmallest(vector<int> &v, int N, int K)
+vector<int> kSmallest(vector<int>& v, int N, int K)
 {
     if (USE_QUICKSELECT)
     {
@@ -305,7 +307,7 @@ vector<int> kSmallest(vector<int> &v, int N, int K)
     return kSmallestHeap(v, N, K);
 }
 
-void sort_and_print_old(vector<int> &arr, int low, int high, int id)
+void sort_and_print_old(vector<int>& arr, int low, int high, int id)
 {
     vector<int> v;
     dprintf("Hello from %d \n", id);
@@ -333,7 +335,7 @@ void sort_and_print_old(vector<int> &arr, int low, int high, int id)
     }
 }
 
-void sort_and_print(vector<int> &arr, int id, int lbflag)
+void sort_and_print(vector<int>& arr, int id, int lbflag)
 {
     vector<int> v;
     dprintf("Hello from %d \n", id);
@@ -342,17 +344,18 @@ void sort_and_print(vector<int> &arr, int id, int lbflag)
         dprintf("%d ", arr[i]);
     }
     // my code
-    ofstream output_file(lbflag?"Sorted-LB.txt":"Sorted-No-LB.txt", std::ios_base::app);
+    ofstream output_file(lbflag ? "Sorted-LB.txt" : "Sorted-No-LB.txt", std::ios_base::app);
     if (output_file.is_open())
     {
         output_file << "Processor " << id << ":" << endl;
         for (int i = 0; i < arr.size(); i++)
         {
-            if ( i==arr.size()-1){
+            if (i == arr.size() - 1) {
                 output_file << arr[i];
-            }else{
+            }
+            else {
                 output_file << arr[i] << ", ";
-            }         
+            }
         }
         output_file << endl;
         output_file.close();
@@ -363,7 +366,7 @@ void sort_and_print(vector<int> &arr, int id, int lbflag)
     }
 }
 
-vector<int> remove2(vector<int> &v, vector<int> &extraElements)
+vector<int> remove2(vector<int>& v, vector<int>& extraElements)
 {
     unordered_map<int, int> counts;
     for (int el : extraElements)
@@ -390,7 +393,7 @@ vector<int> remove2(vector<int> &v, vector<int> &extraElements)
     return res;
 }
 
-vector<int> remove(vector<int> &v, vector<int> &extraElements, bool withDuplicates = true)
+vector<int> remove(vector<int>& v, vector<int>& extraElements, bool withDuplicates = true)
 {
     vector<int> result;
     std::unordered_set<int> s(extraElements.begin(), extraElements.end());
@@ -431,6 +434,8 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& l
     int extraElementsSize = 0;
     int numberOfElements = 0;
     int counter = 0;
+    int maxrounds = 9;
+    float acceptableImbalance = 0.2;
     // Left to right load balancing
     while (docontinue > 0)
     {
@@ -468,7 +473,7 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& l
                 }
             }
         }
-        if (extraElementsSize > 0.2 * optimalSize)
+        if (extraElementsSize > acceptableImbalance * optimalSize)
         {
             mycontinue = 1;
         }
@@ -480,7 +485,7 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& l
         int sum = 0;
         MPI_Reduce(&mycontinue, &docontinue, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
         MPI_Bcast(&docontinue, 1, MPI_INT, 0, MPI_COMM_WORLD);
-        if (counter > 9) {
+        if (counter > maxrounds) {
             break;
         }
         /*
@@ -556,7 +561,7 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& l
 
             }
         }
-        if (extraElementsSize > 0.2 * optimalSize)
+        if (extraElementsSize > acceptableImbalance * optimalSize)
         {
             mycontinue = 1;
         }
@@ -568,7 +573,7 @@ vector<int> loadbalancing(int totalElements, int totalProcessors, vector<int>& l
         int sum = 0;
         MPI_Reduce(&mycontinue, &docontinue, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
         MPI_Bcast(&docontinue, 1, MPI_INT, 0, MPI_COMM_WORLD);
-        if (counter > 9) {
+        if (counter > maxrounds) {
             break;
         }
         if (docontinue > 0)
@@ -624,7 +629,7 @@ vector<int> generatRandomElements(int numberOfElements, bool unique = true)
     return data;
 }
 
-vector<int> slice(vector<int> &v, int low, int high)
+vector<int> slice(vector<int>& v, int low, int high)
 {
     if (low > high)
     {
@@ -634,7 +639,7 @@ vector<int> slice(vector<int> &v, int low, int high)
     return std::vector<int>(v.begin() + low, v.end() - (v.size() - high - 1));
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 
     // Set the seed, optional
@@ -655,40 +660,41 @@ int main(int argc, char **argv)
     // read the value of numberOfElements
     // numberOfElements = atoi(argv[1]);
     int lbflag = atoi(argv[3]);//0 = no lb; 1 = lb
-    
+    int skew = atoi(argv[4]);
 
     int N;
     if (myid == 0) {
         data = readFile(argv[1]);
         vector<int> pivots = readFile(argv[2]);
         // vector<int> max_index = readFile(argv[3]);
-        N= data.size();
+        N = data.size();
 
         quicksort(data, 0, data.size() - 1, pivots);
 
-        for (int i=1; i < alldata.size(); i++) {
+        for (int i = 1; i < alldata.size(); i++) {
             int size = alldata[i].size();
             MPI_Send(&size, 1, MPI_INT, i, METADATA, MPI_COMM_WORLD);
             MPI_Send(&alldata[i][0], size, MPI_INT, i, DATA, MPI_COMM_WORLD);
         }
         // proc 0 needs only the first set
-        data = alldata[0];        
+        data = alldata[0];
 
         // data = generatRandomElements(numberOfElements, false);
         // data = {2,15,14,3,12,11,1,9,16,7,6,5,4,13,10,8};
         // data = {8,2,3,4,5,6,7,1,9,10,11,12,13,14,15,16};
-    } else {
+    }
+    else {
         MPI_Recv(&numberOfElements, 1, MPI_INT, 0, METADATA, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         int* els = new int[numberOfElements];
         MPI_Recv(els, numberOfElements, MPI_INT, 0, DATA, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-        for (int i=0; i<numberOfElements; i++) {
+        for (int i = 0; i < numberOfElements; i++) {
             data.push_back(els[i]);
         }
         delete[] els;
     }
+    MPI_Bcast(&N, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
-    
     MPI_Barrier(MPI_COMM_WORLD);
     vector<int> balanceddata;
     if (myid == 0) {
@@ -703,11 +709,11 @@ int main(int argc, char **argv)
     //with load balancing
     if (lbflag == 1)
     {
-        balanceddata = loadbalancing(data.size(), P, balanceddata, myid);
+        balanceddata = loadbalancing(N, P, balanceddata, myid);
     }
-    
+
     cout << "After LB" << endl;
-    for (int i=0; i<balanceddata.size(); i++) {
+    for (int i = 0; i < balanceddata.size(); i++) {
         cout << balanceddata[i] << " ";
     }
     cout << endl;
@@ -719,13 +725,11 @@ int main(int argc, char **argv)
 
     if (myid == 0)
     {
-        ofstream output_file(lbflag?"Sorted-LB.txt":"Sorted-No-LB.txt", std::ios_base::out);
+        ofstream output_file(lbflag ? "Sorted-LB.txt" : "Sorted-No-LB.txt", std::ios_base::out);
 
         if (output_file.is_open())
         {
-            output_file << "N= " << N << ", P=" << P << ",s="
-                        << " ,"
-                        << "load imbalance metric=" <<lbflag <<endl;
+            output_file << "N= " << N << ", P=" << P << ", s=" << skew << ", load imbalance metric=" << lbflag << endl;
             output_file.close();
         }
         else
@@ -735,7 +739,7 @@ int main(int argc, char **argv)
 
         if (balanceddata.size() > 0)
         {
-            sort_and_print(balanceddata, myid,lbflag);
+            sort_and_print(balanceddata, myid, lbflag);
         }
         else {
             dprintf("Hello from %d, nothing to print \n", myid);
@@ -750,9 +754,9 @@ int main(int argc, char **argv)
         MPI_Recv(&token, 1, MPI_INT, myid - 1, TOKEN, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
         // print out this procs elements
-        
+
         if (balanceddata.size() > 0) {
-            sort_and_print(balanceddata, myid,lbflag);
+            sort_and_print(balanceddata, myid, lbflag);
         }
         else {
             dprintf("Hello from %d, nothing to print \n", myid);
@@ -773,7 +777,15 @@ int main(int argc, char **argv)
     if (myid == 0)
     {
         end = MPI_Wtime();
-        printf("\nTime taken = %f\n", end - start);
+        if (lbflag == 1) {
+            printf("\nLoad Balancing ");
+        }
+        else
+        {
+            printf("\nNon Load Balancing ");
+
+        }
+        printf("Time taken = %f\n", end - start);
     }
     // Finalize the MPI environment.
     MPI_Finalize();
