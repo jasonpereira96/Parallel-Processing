@@ -4,7 +4,7 @@ import time
 # run chmod +x generate.py before running this
 
 count = 0 
-SLEEP_TIME = 2
+SLEEP_TIME = 0.5
 
 def getCombo(P):
 	combos = {
