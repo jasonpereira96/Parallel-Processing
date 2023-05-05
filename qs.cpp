@@ -774,6 +774,28 @@ int main(int argc, char **argv)
     {
         end = MPI_Wtime();
         printf("\nTime taken = %f\n", end - start);
+
+        ofstream output_file2("QS_LB_Stats.txt", std::ios_base::app);
+
+        if (output_file2.is_open())
+        {
+            if (lbflag ==1){
+                output_file2 <<"---------------------------"<<endl;
+                output_file2 << "N= " << N << ", P=" << P << ",s="
+                        << " ,"
+                        << "load imbalance metric=" << endl;
+                output_file2<<"Parallel Time w/ LB="<<end - start<<endl;
+            }else{
+                output_file2<<"Parallel Time w/o LB="<<end - start<<endl;
+                output_file2 <<"----------------------------"<<endl;
+            }
+            
+            output_file2.close();
+        }
+        else
+        {
+            cout << "Unable to open file";
+        }
     }
     // Finalize the MPI environment.
     MPI_Finalize();
