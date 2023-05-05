@@ -1,0 +1,8 @@
+Parallel Time w/o LB=0.12034
+----------------------------
+---------------------------
+N= 10000, P=16,s= ,load imbalance metric=
+Parallel Time w/ LB=0.894887
+---------------------------
+N= 10000, P=16,s=4, load imbalance metric=
+Parallel Time w/ LB=0.824664
