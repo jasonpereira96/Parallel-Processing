@@ -22,9 +22,25 @@ const int TOKEN = 3;
 const bool USE_QUICKSELECT = false;
 const bool DEBUG_MODE = false;
 
-
 int p = 0;
 vector<vector<int>> alldata;
+
+double standardDeviation(vector<int> arr){
+    double mean = 0.0, sum_deviation = 0.0;
+    int i;
+    for(i=0; i<arr.size(); ++i)
+    {
+        mean += arr[i];
+    }
+    mean = mean/arr.size();
+    for(i=0; i<arr.size(); ++i)
+        sum_deviation += (arr[i]-mean)*(arr[i]-mean);
+    return sqrt(sum_deviation/arr.size());
+}
+
+double loadImbalanceMetric(vector<int> arr, int n, int p){
+    return standardDeviation(arr)/(n/p);
+}
 
 vector<int> readFile(string filename) {
     ifstream infile(filename);
@@ -627,7 +643,6 @@ int main(int argc, char** argv) {
         }
         delete[] els;
     }
-
     
     MPI_Barrier(MPI_COMM_WORLD);
     vector<int> balanceddata;
@@ -636,7 +651,7 @@ int main(int argc, char** argv) {
     }
     // load balancing
     // balanceddata = loadbalancing(data.size(), P, data, low, high, myid);
-
+    
     // without load balancing
     balanceddata = data;
 
@@ -696,6 +711,10 @@ int main(int argc, char** argv) {
         end = MPI_Wtime();
         printf("\nTime taken = %f\n", end - start);
     }
+
+    //Output:
+    void outputData();
+
     // Finalize the MPI environment.
     MPI_Finalize();
 
