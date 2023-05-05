@@ -308,35 +308,9 @@ vector<int> kSmallest(vector<int>& v, int N, int K)
     return kSmallestHeap(v, N, K);
 }
 
-void sort_and_print_old(vector<int>& arr, int low, int high, int id)
+void print(vector<int>& arr, int id, int lbflag)
 {
     vector<int> v;
-
-    for (int i = low; i <= high; i++) {
-        v.push_back(arr[i]);
-    }
-    insertion_sort(v);
-
-    ofstream output_file("output.txt", id == 0 ? std::ios_base::out : std::ios_base::app);
-    if (output_file.is_open())
-    {
-        if (id == 0)
-        {
-            output_file << "Sorted data" << endl;
-        }
-        for (int i = 0; i < v.size(); i++)
-        {
-            output_file << v[i] << endl;
-        }
-        output_file.close();
-    }
-}
-
-void sort_and_print(vector<int>& arr, int id, int lbflag)
-{
-    vector<int> v;
-
-    insertion_sort(arr);
 
     // my code
     ofstream output_file(lbflag ? "Sorted-LB.txt" : "Sorted-No-LB.txt", std::ios_base::app);
@@ -714,6 +688,11 @@ int main(int argc, char** argv)
         balanceddata = loadbalancing(N, P, balanceddata, myid);
     }
 
+
+    insertion_sort(balanceddata);
+
+    end = MPI_Wtime();
+
     int token = 566;
 
     // Sequential token passing that prints all the elements in each processor
@@ -730,7 +709,7 @@ int main(int argc, char** argv)
 
         if (balanceddata.size() > 0)
         {
-            sort_and_print(balanceddata, myid, lbflag);
+            print(balanceddata, myid, lbflag);
         }
 
         // start sending the token from proc 0
@@ -744,7 +723,7 @@ int main(int argc, char** argv)
         // print out this procs elements
 
         if (balanceddata.size() > 0) {
-            sort_and_print(balanceddata, myid, lbflag);
+            print(balanceddata, myid, lbflag);
         }
         // send the token to the next proc
         if (myid < P - 1) {
@@ -753,7 +732,6 @@ int main(int argc, char** argv)
     }
     if (myid == 0)
     {
-        end = MPI_Wtime();
 
         string outputFileName = "output/" + std::to_string(N) + "_" + std::to_string(P) + "_" + std::to_string(skew) + "_" + (lbflag?"LB":"noLB") + "_output.txt";
 
