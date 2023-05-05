@@ -14,7 +14,7 @@ def getCombo(P):
 		12: {'nodes': 1, 'ppn': 12},
 		16: {'nodes': 1, 'ppn': 16},
 		20: {'nodes': 1, 'ppn': 20},
-		24: {'nodes': 2, 'ppn': 6},
+		24: {'nodes': 2, 'ppn': 12},
 		32: {'nodes': 2, 'ppn': 16},
 		40: {'nodes': 2, 'ppn': 20},
 		48: {'nodes': 4, 'ppn': 12},
