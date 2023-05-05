@@ -15,8 +15,8 @@ module load MPICH/3.3.2-GCC-9.3.0
 #
 # Build mpi job
 #
-rm output.txt
-rm qs.out
+# rm output.txt
+# rm qs.out
 mpic++ qs.cpp -o qs.out
 #
 # Run mpi job
