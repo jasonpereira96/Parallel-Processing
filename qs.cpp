@@ -26,20 +26,21 @@ const bool DEBUG_MODE = false;
 int p = 0;
 vector<vector<int>> alldata;
 
-double standardDeviation(vector<int> arr){
-    double mean = 0.0, sum_deviation = 0.0;
-    int i;
-    for(i=0; i<arr.size(); ++i)
-    {
+double standardDeviation(vector<long> arr){
+    double mean = 0;
+    for(int i=0; i<arr.size(); i++){
         mean += arr[i];
     }
-    mean = mean/arr.size();
-    for(i=0; i<arr.size(); ++i)
-        sum_deviation += (arr[i]-mean)*(arr[i]-mean);
-    return sqrt(sum_deviation/arr.size());
+    mean /= arr.size();
+
+    double sum = 0;
+    for(int i=0; i<arr.size(); i++){
+        sum += pow(arr[i] - mean, 2);
+    }
+    return sqrt(sum/arr.size());
 }
 
-double loadImbalanceMetric(vector<int> arr, int n, int p){
+double loadImbalanceMetric(vector<long> arr, int n, int p){
     return standardDeviation(arr)/(n/p);
 }
 
@@ -712,13 +713,25 @@ int main(int argc, char** argv)
     }
     MPI_Bcast(&N, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
+    long initialSize = data.size();
+    vector<long> initialSizes = {initialSize};
+
+    if(myid==0){
+        for(int i=1; i<P; i++){
+            long remoteInitialSize;
+            MPI_Recv(&remoteInitialSize, 1, MPI_LONG, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            initialSizes.push_back(remoteInitialSize);
+        }
+    }
+    else{
+        MPI_Send(&initialSize, 1, MPI_LONG, 0, 0, MPI_COMM_WORLD);
+    }
+
     MPI_Barrier(MPI_COMM_WORLD);
     vector<int> balanceddata;
     if (myid == 0) {
         start = MPI_Wtime();
     }
-    // load balancing
-    // balanceddata = loadbalancing(data.size(), P, data, low, high, myid);
 
     // without load balancing
     balanceddata = data;
@@ -746,7 +759,7 @@ int main(int argc, char** argv)
 
         if (output_file.is_open())
         {
-            output_file << "N= " << N << ", P=" << P << ", s=" << skew << ", load imbalance metric=" << lbflag << endl;
+            output_file << "N= " << N << ", P=" << P << ", s=" << skew << ", load imbalance metric=" << loadImbalanceMetric(initialSizes, N, P) << endl;
             output_file.close();
         }
         else
