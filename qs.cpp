@@ -88,10 +88,6 @@ int partition(vector<int>& arr, int low, int high, vector<int>& pivots) {
     int pivot = pivots[p++];
     int pivotIndex = find(arr.begin(), arr.end(), pivot) - arr.begin();
 
-    // cout << "pvitor: " << pivot << endl;
-    // cout << "pvitorIndex: " << pivotIndex << endl;
-
-
     // Initialize pointers
     int i = low;
 
@@ -118,23 +114,12 @@ void quicksort(vector<int>& arr, int low, int high, vector<int>& pivots) {
         int p = partition(arr, low, high, pivots);
         vector<int> v;
         for (int i = low; i <= p; i++) {
-            cout << arr[i] << " ";
             v.push_back(arr[i]);
         }
         alldata.push_back(v);
-        cout << endl;
         if (p == -1) return;
         // quicksort(arr, low, p - 1);
         quicksort(arr, p + 1, high, pivots);
-    }
-}
-
-void dprintf(const char* format, ...) {
-    if (DEBUG_MODE) {
-        va_list args;
-        va_start(args, format);
-        vprintf(format, args);
-        va_end(args);
     }
 }
 
@@ -309,7 +294,6 @@ vector<int> kLargest(vector<int>& v, int N, int K)
 {
     if (USE_QUICKSELECT)
     {
-        // cout << "Using Quickselect" << endl;
         return kLargestQuickselect(v, N, K);
     }
     return kLargestHeap(v, N, K);
@@ -319,7 +303,6 @@ vector<int> kSmallest(vector<int>& v, int N, int K)
 {
     if (USE_QUICKSELECT)
     {
-        // cout << "Using Quickselect" << endl;
         return kSmallestQuickselect(v, N, K);
     }
     return kSmallestHeap(v, N, K);
@@ -328,7 +311,7 @@ vector<int> kSmallest(vector<int>& v, int N, int K)
 void sort_and_print_old(vector<int>& arr, int low, int high, int id)
 {
     vector<int> v;
-    dprintf("Hello from %d \n", id);
+
     for (int i = low; i <= high; i++) {
         v.push_back(arr[i]);
     }
@@ -347,20 +330,14 @@ void sort_and_print_old(vector<int>& arr, int low, int high, int id)
         }
         output_file.close();
     }
-    else
-    {
-        cout << "Unable to open file";
-    }
 }
 
 void sort_and_print(vector<int>& arr, int id, int lbflag)
 {
     vector<int> v;
-    dprintf("Hello from %d \n", id);
+
     insertion_sort(arr);
-    for (int i = 0; i < arr.size(); i++) {
-        dprintf("%d ", arr[i]);
-    }
+
     // my code
     ofstream output_file(lbflag ? "Sorted-LB.txt" : "Sorted-No-LB.txt", std::ios_base::app);
     if (output_file.is_open())
@@ -377,10 +354,6 @@ void sort_and_print(vector<int>& arr, int id, int lbflag)
         }
         output_file << endl;
         output_file.close();
-    }
-    else
-    {
-        cout << "Unable to open file";
     }
 }
 
@@ -651,7 +624,6 @@ vector<int> slice(vector<int>& v, int low, int high)
 {
     if (low > high)
     {
-        cout << "Invalid indexes to slice" << endl;
         throw std::runtime_error("Invalid indexes to slice");
     }
     return std::vector<int>(v.begin() + low, v.end() - (v.size() - high - 1));
@@ -742,13 +714,6 @@ int main(int argc, char** argv)
         balanceddata = loadbalancing(N, P, balanceddata, myid);
     }
 
-    cout << "After LB" << endl;
-    for (int i = 0; i < balanceddata.size(); i++) {
-        cout << balanceddata[i] << " ";
-    }
-    cout << endl;
-
-    printf("\nMYID = %d, balanced data = %ld\n", myid, balanceddata.size());
     int token = 566;
 
     // Sequential token passing that prints all the elements in each processor
@@ -762,18 +727,12 @@ int main(int argc, char** argv)
             output_file << "N= " << N << ", P=" << P << ", s=" << skew << ", load imbalance metric=" << loadImbalanceMetric(initialSizes, N, P) << endl;
             output_file.close();
         }
-        else
-        {
-            cout << "Unable to open file";
-        }
 
         if (balanceddata.size() > 0)
         {
             sort_and_print(balanceddata, myid, lbflag);
         }
-        else {
-            dprintf("Hello from %d, nothing to print \n", myid);
-        }
+
         // start sending the token from proc 0
         MPI_Send(&token, 1, MPI_INT, myid + 1, TOKEN, MPI_COMM_WORLD);
     }
@@ -788,34 +747,15 @@ int main(int argc, char** argv)
         if (balanceddata.size() > 0) {
             sort_and_print(balanceddata, myid, lbflag);
         }
-        else {
-            dprintf("Hello from %d, nothing to print \n", myid);
-        }
-
         // send the token to the next proc
         if (myid < P - 1)
         {
             MPI_Send(&token, 1, MPI_INT, myid + 1, TOKEN, MPI_COMM_WORLD);
         }
 
-        // print out a complete message
-        if (myid == (P - 1))
-        {
-            printf("Sorting complete. \n");
-        }
-    }
     if (myid == 0)
     {
         end = MPI_Wtime();
-        if (lbflag == 1) {
-            printf("\nLoad Balancing ");
-        }
-        else
-        {
-            printf("\nNon Load Balancing ");
-
-        }
-        printf("Time taken = %f\n", end - start);
 
         string outputFileName = "output/" + std::to_string(N) + "_" + std::to_string(P) + "_" + std::to_string(skew) + "_" + (lbflag?"LB":"noLB") + "_output.txt";
 
@@ -836,10 +776,6 @@ int main(int argc, char** argv)
             }
             
             output_file2.close();
-        }
-        else
-        {
-            cout << "Unable to open file";
         }
     }
     // Finalize the MPI environment.
