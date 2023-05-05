@@ -1,4 +1,108 @@
 ---------------------------
+N= 1000000, P=12, s=12, load imbalance metric=1.10192
+Parallel Time w/ LB=19.4763
+Parallel Time w/o LB=15.5263
+----------------------------
+---------------------------
+N= 1000000, P=12, s=2, load imbalance metric=1.73206
+Parallel Time w/ LB=155.662
+---------------------------
+N= 1000000, P=12, s=3, load imbalance metric=1.18377
+Parallel Time w/ LB=128.922
+Parallel Time w/o LB=248.437
+----------------------------
+---------------------------
+N= 1000000, P=12, s=4, load imbalance metric=0.855944
+Parallel Time w/ LB=80.8059
+Parallel Time w/o LB=139.674
+----------------------------
+---------------------------
+N= 1000000, P=12, s=6, load imbalance metric=0.537137
+Parallel Time w/ LB=19.7826
+Parallel Time w/o LB=62.261
+----------------------------
+---------------------------
+N= 1000000, P=12, s=8, load imbalance metric=0.627261
+Parallel Time w/ LB=16.9734
+Parallel Time w/o LB=35.0611
+----------------------------
+---------------------------
+N= 1000000, P=16, s=16, load imbalance metric=1.32278
+Parallel Time w/ LB=13.7884
+Parallel Time w/o LB=8.76328
+----------------------------
+---------------------------
+N= 1000000, P=16, s=4, load imbalance metric=1.13497
+Parallel Time w/ LB=460.557
+Parallel Time w/o LB=139.617
+----------------------------
+---------------------------
+N= 1000000, P=16, s=8, load imbalance metric=0.581855
+Parallel Time w/ LB=15.5104
+Parallel Time w/o LB=35.0654
+----------------------------
+---------------------------
+N= 1000000, P=20, s=10, load imbalance metric=0.63117
+Parallel Time w/ LB=12.309
+Parallel Time w/o LB=22.3816
+----------------------------
+---------------------------
+N= 1000000, P=20, s=20, load imbalance metric=1.5125
+Parallel Time w/ LB=11.1919
+Parallel Time w/o LB=5.61445
+----------------------------
+Parallel Time w/o LB=139.772
+----------------------------
+---------------------------
+N= 1000000, P=20, s=5, load imbalance metric=1.10721
+Parallel Time w/ LB=320.596
+Parallel Time w/o LB=89.3364
+----------------------------
+---------------------------
+N= 1000000, P=20, s=8, load imbalance metric=0.670906
+Parallel Time w/ LB=148.699
+Parallel Time w/o LB=35.0727
+----------------------------
+---------------------------
+N= 1000000, P=24, s=12, load imbalance metric=0.68035
+Parallel Time w/ LB=34.518
+Parallel Time w/o LB=15.5366
+----------------------------
+---------------------------
+N= 1000000, P=24, s=24, load imbalance metric=1.6813
+Parallel Time w/ LB=9.79563
+Parallel Time w/o LB=3.90043
+----------------------------
+Parallel Time w/o LB=139.66
+----------------------------
+---------------------------
+N= 1000000, P=24, s=6, load imbalance metric=1.08942
+Parallel Time w/ LB=235.431
+Parallel Time w/o LB=62.2513
+----------------------------
+---------------------------
+N= 1000000, P=24, s=8, load imbalance metric=0.805094
+Parallel Time w/ LB=113.612
+Parallel Time w/o LB=35.0686
+----------------------------
+---------------------------
+N= 1000000, P=32, s=16, load imbalance metric=0.773713
+Parallel Time w/ LB=6.82318
+Parallel Time w/o LB=8.76877
+----------------------------
+---------------------------
+N= 1000000, P=32, s=32, load imbalance metric=1.97648
+Parallel Time w/ LB=8.57747
+Parallel Time w/o LB=2.19916
+----------------------------
+Parallel Time w/o LB=139.688
+----------------------------
+---------------------------
+N= 1000000, P=32, s=8, load imbalance metric=1.06814
+Parallel Time w/ LB=142.439
+Parallel Time w/o LB=35.0844
+----------------------------
+---------------------------
 N= 1000000, P=40, s=10, load imbalance metric=1.05617
 Parallel Time w/ LB=95.685
 Parallel Time w/o LB=22.4899
